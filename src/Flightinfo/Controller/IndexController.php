@@ -33,8 +33,8 @@ class IndexController extends AbstractActionController
         //SERVICES
         //  load all services
         $sm = $this->getServiceLocator();
-        $newsService = $sm->get('FlightInfo\Service\News');
+        //$newsService = $sm->get('FlightInfo\Service\News');
 
-        return new ViewModel(['news' => $newsService->fetchAll(),]);
+        return new ViewModel();
     }
 }
