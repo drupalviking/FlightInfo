@@ -99,13 +99,13 @@ Since (Apache's) httpd folder is `<workspace>/FlightInfo/public` but all our js/
 is located in `<workspace>/FlightInfo/module/FlightInfo/public`, we have to connect the resources folder to the
 httpd folder.
 
-	$ ln -s <full/path/to/workspace>/FlightInfo/module/FlightInfo/public/flightinfo <full/path/to/workspace>/FlightInfo/public/flightinfo
+	$ ln -s <full/path/to/workspace>/FlightInfo/module/FlightInfo/public/flight-info <full/path/to/workspace>/FlightInfo/public/flight-info
 
 ##Get resources
 
 Make sure you have [Bower](http://bower.io/) set up, and the go to
 
-    $ cd <workspace>/FlightInfo/module/FlightInfo/public/flightinfo/
+    $ cd <workspace>/FlightInfo/module/FlightInfo/public/flight-info/
     $ bower install
     $ bower install bootstrap-sass-official
 

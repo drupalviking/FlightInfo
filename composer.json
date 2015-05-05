@@ -1,9 +1,9 @@
 {
-    "name": "fizk/Stjornvisi",
+    "name": "drupalviking/FlightInfo",
     "version": "1.0.0",
     "type": "zend-module",
     "autoload": {
-        "psr-4": {"Stjornvisi\\": "src/"}
+        "psr-4": {"FlightInfo\\": "src/"}
     },
     "prefer-stable": true,
     "minimum-stability": "dev",
