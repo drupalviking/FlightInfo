@@ -76,6 +76,9 @@ class Module
 			'invokables' => [
 				'FlightInfo\Service\User' 		=> 'FlightInfo\Service\User',
 			],
+			'aliases' => array(
+				'UserService' => 'FlightInfo\Service\User',
+			),
 			'factories' => array(
 				'Logger' => function ($sm) {
 					$log = new Logger('FlightInfo');
@@ -132,6 +135,5 @@ class Module
 				},
 			),
 		);
-    }
-
+	}
 }
