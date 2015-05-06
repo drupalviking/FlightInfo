@@ -17,12 +17,14 @@ use Zend\Session\Container;
 
 use FlightInfo\Form\Login;
 
+date_default_timezone_set('UTC');
+
 /**
  * Login / Logout. Create Users and connect the via oAuth etc...
  *
  * Class AuthController
  *
- * @package Stjornvisi\Controller
+ * @package FlightInfo\Controller
  */
 class AuthController extends AbstractActionController
 {
@@ -133,7 +135,7 @@ class AuthController extends AbstractActionController
           //  take appropriate steps.
           $data = $form->getData();
           $sm = $this->getServiceLocator();
-          $authAdapter =  $sm->get('Stjornvisi\Auth\Adapter');
+          $authAdapter =  $sm->get('FlightInfo\Auth\Adapter');
           $authAdapter->setCredentials($data['email'], $data['passwd']);
           $result = $auth->authenticate($authAdapter);
           if ($result->isValid()) {
@@ -141,7 +143,7 @@ class AuthController extends AbstractActionController
               new SetCookie(
                 'backpfeifengesicht',
                 $this->getServiceLocator()
-                  ->get('Stjornvisi\Service\User')
+                  ->get('FlightInfo\Service\User')
                   ->createHash($auth->getIdentity()->id),
                 time() + 365 * 60 * 60 * 24,
                 '/'
@@ -197,7 +199,7 @@ class AuthController extends AbstractActionController
   public function lostPasswordAction()
   {
     $sm = $this->getServiceLocator();
-    $userService = $sm->get('Stjornvisi\Service\User');
+    $userService = $sm->get('FlightInfo\Service\User');
     $form = new LostPasswordForm();
     $form->setAttribute('action', $this->url()->fromRoute('access/lost-password'));
     if ($this->request->isPost()) {

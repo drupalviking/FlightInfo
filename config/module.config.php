@@ -25,12 +25,32 @@ return array(
           ),
         ),
       ),
-      'notandi' => array(
+      'auth-out' => array(
         'type' => 'Zend\Mvc\Router\Http\Literal',
         'options' => array(
-          'route' => '/notandi',
+          'route' => '/utskra',
           'defaults' => array(
-            'controller' => 'FlightInfo\Controller\User',
+            'controller' => 'FlightInfo\Controller\Auth',
+            'action' => 'logout'
+          ),
+        ),
+      ),
+      'auth-in' => array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+          'route' => '/innskra',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Auth',
+            'action' => 'login'
+          ),
+        ),
+      ),
+      'airport' => array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+          'route' => '/flugvollur',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Airport',
             'action' => 'list'
           ),
         ),
@@ -44,163 +64,23 @@ return array(
                 'id' => '[0-9]*',
               ),
               'defaults' => array(
-                'controller' => 'FlightInfo\Controller\User',
+                'controller' => 'FlightInfo\Controller\Airport',
                 'action' => 'index'
               ),
             )
           ),
-          'update' => array(
+          'list' => array(
             'type' => 'Zend\Mvc\Router\Http\Segment',
             'options' => array(
-              'route' => '/:id/uppfaera',
+              'route' => '/sida/:no',
               'constraints' => array(
-                'id' => '[0-9]*',
+                'no' => '[0-9]*',
               ),
               'defaults' => array(
-                'controller' => 'FlightInfo\Controller\User',
-                'action' => 'update'
+                'controller' => 'FlightInfo\Controller\Airport',
+                'action' => 'list'
               ),
             )
-          ),
-          'create' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/stofna',
-              'constraints' => array(
-                'id' => '[0-9]*',
-              ),
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user'
-              ),
-            )
-          ),
-
-          'company' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/stofna/fyrirtaeki',
-              'constraints' => array(
-                'id' => '[0-9]*',
-              ),
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user-company'
-              ),
-            )
-          ),
-          'login' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/stofna/innskra',
-              'constraints' => array(
-                'id' => '[0-9]*',
-              ),
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user-login'
-              ),
-            )
-          ),
-
-
-          'delete' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/:id/eyda',
-              'constraints' => array(
-                'id' => '[0-9]*',
-              ),
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\User',
-                'action' => 'delete'
-              ),
-            )
-          ),
-          'change-password' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/:id/lykilord',
-              'constraints' => array(
-                'id' => '[0-9]*',
-              ),
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\User',
-                'action' => 'change-password'
-              ),
-            )
-          ),
-        ),
-      ),
-      'access' => array(
-        'type' => 'Zend\Mvc\Router\Http\Literal',
-        'options' => array(
-          'route' => '/adgangur',
-          'defaults' => array(
-            'controller' => 'FlightInfo\Controller\Auth',
-            'action' => 'login'
-          ),
-        ),
-        'child_routes' => array(
-          'create' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/stofna',
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user'
-              ),
-            )
-          ),
-          'company' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/fyrirtaeki',
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user-company'
-              ),
-            )
-          ),
-          'login' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/innskra',
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user-login'
-              ),
-            )
-          ),
-          'confirm' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/stadfesta',
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'create-user-confirm'
-              ),
-            )
-          ),
-          'lost-password' => array(
-            'type' => 'Zend\Mvc\Router\Http\Segment',
-            'options' => array(
-              'route' => '/tynt-lykilord',
-              'defaults' => array(
-                'controller' => 'FlightInfo\Controller\Auth',
-                'action' => 'lost-password'
-              ),
-            )
-          ),
-        ),
-      ),
-      'auth-out' => array(
-        'type' => 'Zend\Mvc\Router\Http\Literal',
-        'options' => array(
-          'route' => '/utskra',
-          'defaults' => array(
-            'controller' => 'FlightInfo\Controller\Auth',
-            'action' => 'logout'
           ),
         ),
       ),
@@ -229,6 +109,8 @@ return array(
     'invokables' => array(
       'FlightInfo\Controller\Index' => 'FlightInfo\Controller\IndexController',
       'FlightInfo\Controller\User' => 'FlightInfo\Controller\UserController',
+      'FlightInfo\Controller\Auth' => 'FlightInfo\Controller\AuthController',
+      'FlightInfo\Controller\Airport' => 'FlightInfo\Controller\AirportController',
     ),
   ),
   'view_helpers' => array(

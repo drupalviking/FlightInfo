@@ -78,6 +78,7 @@ class Module
 			'invokables' => [
 				'FlightInfo\Service\User' 		=> 'FlightInfo\Service\User',
 				'FlightInfo\Auth\Adapter'		=> 'FlightInfo\Auth\Adapter',
+				'FlightInfo\Service\Airport' => 'FlightInfo\Service\Airport',
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',

@@ -1,0 +1,91 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 06/05/15
+ * Time: 11:31
+ */
+$airportLength = sizeof( $this->airports );
+?>
+<style>
+  #map-canvas {
+    width: 1000px;
+    height: 800px;
+  }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+  function initialize() {
+    var locations = [
+      <?php foreach( $this->airports as $airport ) : ?>
+        ['<?=$airport->name;?>', '<?=$airport->airport_code;?>', <?=$airport->latitude; ?>, <?=$airport->longitude; ?>],
+      <?php endforeach; ?>
+    ];
+    var mapCanvas = document.getElementById('map-canvas');
+    var mapOptions = {
+      center: new google.maps.LatLng(64.9312763, -19.0211697),
+      zoom: 7,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    var icons = {
+      airport: {
+        icon: 'images/airport.jpg'
+      }
+    }
+
+    var map = new google.maps.Map(mapCanvas, mapOptions);
+    var infowindow = new google.maps.InfoWindow;
+    var marker, i;
+
+    for( i=0; i < locations.length; i++){
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][2], locations[i][3]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i][0] + " (" + locations[i][1] + ")");
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+  }
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+<div class="layout layout--three-columns page-newslist">
+  <section class="layout__section">
+
+    <table>
+      <thead>
+        <tr>
+          <td>Flugvöllur</td>
+          <td>Kóði</td>
+          <td>Síðast breytt</td>
+          <td>Lengdargráða</td>
+          <td>Breiddargráða</td>
+        </tr>
+      </thead>
+      <tbody>
+      <?php foreach($this->airports as $airport):?>
+        <tr>
+          <td><a href="<?=$this->url('airport/index',array('id'=>$airport->id))?>"><?=$airport->name?></a></td>
+          <td><?=$airport->airport_code; ?></td>
+          <td><time class="block-element__time"><?=strftime('%d. %B %Y', $airport->last_modified)?></time></td>
+          <td><?=$airport->latitude;?></td>
+          <td><?=$airport->longitude; ?></td>
+        </tr>
+      <?php endforeach;?>
+      </tbody>
+    </table>
+
+    <ul class="block_pagination">
+      <?php foreach(range(0,$this->pages) as $item):?>
+        <li class="block_pagination__item">
+          <a href="<?=$this->url('airport/list',array('no'=>$item+1))?>" class="block_pagination__link <?=($item == $this->no)?'block_pagination__link--active':''?>"><?=$item+1?></a>
+        </li>
+      <?php endforeach;?>
+    </ul>
+  </section>
+</div>
+<div id="map-canvas"></div>
