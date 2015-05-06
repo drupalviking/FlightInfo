@@ -74,7 +74,7 @@ class Module
 				},
 			),
 			'invokables' => [
-				'FlightInfo\Service\News' 		=> 'FlightInfo\Service\News',
+				'FlightInfo\Service\User' 		=> 'FlightInfo\Service\User',
 			],
 			'factories' => array(
 				'Logger' => function ($sm) {
