@@ -132,6 +132,78 @@ return array(
           ),
         ),
       ),
+      'access' => array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+          'route' => '/adgangur',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Auth',
+            'action' => 'login'
+          ),
+        ),
+        'child_routes' => array(
+          'create' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/stofna',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Auth',
+                'action' => 'create-user'
+              ),
+            )
+          ),
+          'company' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/fyrirtaeki',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Auth',
+                'action' => 'create-user-company'
+              ),
+            )
+          ),
+          'login' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/innskra',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Auth',
+                'action' => 'create-user-login'
+              ),
+            )
+          ),
+          'confirm' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/stadfesta',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Auth',
+                'action' => 'create-user-confirm'
+              ),
+            )
+          ),
+          'lost-password' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/tynt-lykilord',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Auth',
+                'action' => 'lost-password'
+              ),
+            )
+          ),
+        ),
+      ),
+      'auth-out' => array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+          'route' => '/utskra',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Auth',
+            'action' => 'logout'
+          ),
+        ),
+      ),
     ),
   ),
   'service_manager' => array(

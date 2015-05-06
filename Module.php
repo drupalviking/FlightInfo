@@ -29,6 +29,8 @@ use Zend\Session\SessionManager;
 use Zend\Session\Container;
 use Zend\EventManager\EventInterface;
 
+use FlightInfo\Auth\Adapter;
+
 
 class Module
 {
@@ -75,6 +77,7 @@ class Module
 			),
 			'invokables' => [
 				'FlightInfo\Service\User' 		=> 'FlightInfo\Service\User',
+				'FlightInfo\Auth\Adapter'		=> 'FlightInfo\Auth\Adapter',
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',
