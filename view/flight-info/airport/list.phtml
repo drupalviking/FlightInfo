@@ -53,6 +53,7 @@ $airportLength = sizeof( $this->airports );
   }
   google.maps.event.addDomListener(window, 'load', initialize);
 </script>
+<div id="map-canvas"></div>
 <div class="layout layout--three-columns page-newslist">
   <section class="layout__section">
 
@@ -88,4 +89,4 @@ $airportLength = sizeof( $this->airports );
     </ul>
   </section>
 </div>
-<div id="map-canvas"></div>
+<p><a href="<?=$this->url('airport/create');?>" class="update">Skrá nýjan flugvöll</a></p>

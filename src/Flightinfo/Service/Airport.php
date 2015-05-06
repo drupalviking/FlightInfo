@@ -50,7 +50,7 @@ class Airport implements DataSourceAwareInterface {
   }
 
   /**
-   * Get one airport entry.
+   * Get all airport entries.
    *
    * @param int $page page number
    * @param int $count number of items pr. page
@@ -93,9 +93,11 @@ class Airport implements DataSourceAwareInterface {
    * @throws Exception
    */
   public function create( array $data ){
+    //print_r( $data ); die();
     try{
-      $data['created_date'] = date('Y-m-d H:i:s');
-      $data['modified_date'] = date('Y-m-d H:i:s');
+      $data['airport_code'] = strtoupper($data['airport_code']);
+      $data['created_date'] = time();
+      $data['last_modified'] = time();
       $insertString = $this->insertString('Airport',$data);
       $statement = $this->pdo->prepare($insertString);
       $statement->execute($data);
@@ -103,7 +105,7 @@ class Airport implements DataSourceAwareInterface {
       $data['id'] = $id;
       return $id;
     }catch (PDOException $e){
-      throw new Exception("Can't create news entry",0,$e);
+      throw new Exception("Can't create airport entry",0,$e);
     }
 
   }
@@ -118,14 +120,12 @@ class Airport implements DataSourceAwareInterface {
    */
   public function update( $id, array $data ){
     try{
-      $data['modified_date'] = date('Y-m-d H:i:s');
-      $data['created_date'] = date('Y-m-d H:i:s');
+      $data['last_modified'] = time();
+      $data['airport_code'] = strtoupper($data['airport_code']);
       $updateString = $this->updateString('Airport',$data, "id={$id}");
       $statement = $this->pdo->prepare($updateString);
       $statement->execute($data);
       $data['id'] = $id;
-      $data['created_date'] = new DateTime($data['created_date']);
-      $data['modified_date'] = new DateTime($data['modified_date']);
       return $statement->rowCount();
     }catch (PDOException $e){
       throw new Exception("Can't update airport entry",0,$e);

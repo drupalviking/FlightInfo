@@ -1,0 +1,44 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 06/05/15
+ * Time: 13:26
+ */
+$this->form->setAttribute('class','form-horizontal');
+?>
+<div class="layout layout--three-columns">
+  <section class="layout__section">
+    <h1 class="layout__headline layout__headline--center">Bæta við flugvelli</h1>
+
+    <?=$this->form()->openTag($this->form);?>
+
+    <div class="form-group">
+      <?=$this->formLabel($form->get('name'));?>
+      <?=$this->formElement($form->get('name')->setAttribute('class','form-control'));?>
+      <?=$this->formElementErrors($form->get('name'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('airport_code'));?>
+      <?=$this->formElement($form->get('airport_code')->setAttribute('class','form-control'));?>
+      <?=$this->formElementErrors($form->get('airport_code'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('latitude'));?>
+      <?=$this->formElement($form->get('latitude')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('latitude'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('longitude'));?>
+      <?=$this->formElement($form->get('longitude')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('longitude'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formElement(
+        $form->get('submit')->setAttribute('class','btn btn-default')->setValue('Skrá')
+      );?>
+    </div>
+    <?= $this->form()->closeTag() ?>
+  </section>
+  <aside class="layout__aside"></aside>
+</div>

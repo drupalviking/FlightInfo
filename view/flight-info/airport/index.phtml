@@ -27,5 +27,7 @@
 </script>
 <h1><?=$airport->name;?> (<?=$airport->airport_code; ?>)</h1>
 <div id="map-canvas"></div>
+<p><a href="<?=$this->url('airport/update',array('id'=>$this->airport->id));?>" class="update">Uppfæra upplýsingar</a></p>
+<p><a href="<?=$this->url('airport');?>">Til baka í lista</a></p>
 
 

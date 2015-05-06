@@ -82,6 +82,29 @@ return array(
               ),
             )
           ),
+          'create' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/skra',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Airport',
+                'action' => 'create'
+              ),
+            )
+          ),
+          'update' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/:id/uppfaera',
+              'constraints' => array(
+                'id' => '[0-9]*',
+              ),
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Airport',
+                'action' => 'update'
+              ),
+            )
+          ),
         ),
       ),
     ),
