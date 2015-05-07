@@ -11,10 +11,11 @@ use \DateTime;
 use \PDOException;
 use FlightInfo\Lib\DataSourceAwareInterface;
 
-class User extends AbstractService implements DataSourceAwareInterface {
+class User implements DataSourceAwareInterface {
   const REGISTER = 'user.register';
   const NAME = 'user.create';
 
+  use DatabaseService;
   /**
    * @var \PDO
    */
@@ -44,16 +45,8 @@ class User extends AbstractService implements DataSourceAwareInterface {
         'id' => $id
       ));
       $user = $statement->fetchObject();
-
-      $this->getEventManager()->trigger('read', $this, array(__FUNCTION__));
       return $user;
     } catch (PDOException $e) {
-      $this->getEventManager()->trigger('read', $this, array(
-        'exception' => $e->getTraceAsString(),
-        'sql' => array(
-          isset($statement) ? $statement->queryString : NULL
-        )
-      ));
       throw new Exception("Can't get user. user:[{$id}]", 0, $e);
     }
 
@@ -70,12 +63,6 @@ class User extends AbstractService implements DataSourceAwareInterface {
       return $statement->fetchColumn(0);
 
     } catch (PDOException $e) {
-      $this->getEventManager()->trigger('error', $this, [
-        'exception' => $e->getTraceAsString(),
-        'sql' => [
-          isset($statement) ? $statement->queryString : NULL,
-        ]
-      ]);
       throw new Exception("Can't get hash of a user. user:[{$id}]", 0, $e);
     }
   }
@@ -93,15 +80,8 @@ class User extends AbstractService implements DataSourceAwareInterface {
       ));
       $user = $statement->fetchObject();
 
-      $this->getEventManager()->trigger('read', $this, array(__FUNCTION__));
       return $user;
     } catch (PDOException $e) {
-      $this->getEventManager()->trigger('read', $this, array(
-        'exception' => $e->getTraceAsString(),
-        'sql' => array(
-          isset($statement) ? $statement->queryString : NULL
-        )
-      ));
       throw new Exception("Can't get user. user:[{$id}]", 0, $e);
     }
   }
@@ -123,18 +103,11 @@ class User extends AbstractService implements DataSourceAwareInterface {
       );
       $statement->execute(array( 'id' => $id ));
       $value = $statement->fetchColumn(0);
-      $this->getEventManager()->trigger('read', $this, array(__FUNCTION__));
       return (object)array(
         'is_admin' => (bool)$value,
         'type' => 0
       );
     }catch (PDOException $e){
-      $this->getEventManager()->trigger('error', $this, array(
-        'exception' => $e->getTraceAsString(),
-        'sql' => array(
-          isset($statement)?$statement->queryString:null
-        )
-      ));
       throw new Exception("Can't get type of user",0,$e);
     }
   }
@@ -156,15 +129,8 @@ class User extends AbstractService implements DataSourceAwareInterface {
         'password' => $password,
         'id' => $id
       ));
-      $this->getEventManager()->trigger('update', $this, array(__FUNCTION__));
       return $statement->rowCount();
     }catch (PDOException $e){
-      $this->getEventManager()->trigger('error', $this, array(
-        'exception' => $e->getTraceAsString(),
-        'sql' => array(
-          isset($statement)?$statement->queryString:null,
-        )
-      ));
       throw new Exception("Can't set user's password. user:[{$id}]",0,$e);
     }
   }
@@ -187,24 +153,8 @@ class User extends AbstractService implements DataSourceAwareInterface {
       $id = (int)$this->pdo->lastInsertId();
 
       $data['id'] = $id;
-      $this->getEventManager()->trigger('create', $this, array(
-        0 => __FUNCTION__,
-        'data' => $data
-      ));
-
-      $this->getEventManager()->trigger('index', $this, array(
-        0 => __NAMESPACE__ .':'.get_class($this).':'. __FUNCTION__,
-        'id' => $id,
-        'name' => User::NAME,
-      ));
       return $id;
     }catch (PDOException $e){
-      $this->getEventManager()->trigger('error', $this, array(
-        'exception' => $e->getTraceAsString(),
-        'sql' => array(
-          isset($createStatement)?$createStatement->queryString:null
-        )
-      ));
       throw new Exception("Can't create user. " . $e->getMessage() ,0,$e);
     }
   }
@@ -218,24 +168,8 @@ class User extends AbstractService implements DataSourceAwareInterface {
       $updateStatement->execute($data);
 
       $data['id'] = $id;
-      $this->getEventManager()->trigger('update', $this, array(
-        0 => __FUNCTION__,
-        'data' => $data
-      ));
-
-      $this->getEventManager()->trigger('index', $this, array(
-        0 => __NAMESPACE__ .':'.get_class($this).':'. __FUNCTION__,
-        'id' => $id,
-        'name' => User::NAME,
-      ));
       return $id;
     }catch (PDOException $e){
-      $this->getEventManager()->trigger('error', $this, array(
-        'exception' => $e->getTraceAsString(),
-        'sql' => array(
-          isset($createStatement)?$createStatement->queryString:null
-        )
-      ));
       throw new Exception("Can't update user[$id]. " . $e->getMessage() ,0,$e);
     }
   }
