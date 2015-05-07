@@ -79,6 +79,7 @@ class Module
 				'FlightInfo\Service\User' 		=> 'FlightInfo\Service\User',
 				'FlightInfo\Auth\Adapter'		=> 'FlightInfo\Auth\Adapter',
 				'FlightInfo\Service\Airport' => 'FlightInfo\Service\Airport',
+				'FlightInfo\Service\Flight' => 'FlightInfo\Service\Flight',
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',

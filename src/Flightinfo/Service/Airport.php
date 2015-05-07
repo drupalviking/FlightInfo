@@ -157,7 +157,22 @@ class Airport implements DataSourceAwareInterface {
     }else{
       return 0;
     }
+  }
 
+  public function getAirportNames(){
+    $return_array = array();
+    $statement = $this->pdo->prepare("
+					SELECT * FROM `Airport` A
+					ORDER BY A.name ASC
+				");
+    $statement->execute();
+    $airports = $statement->fetchAll();
+
+    foreach( $airports as $airport ){
+      $return_array[$airport->id] = $airport->name . " (" . $airport->airport_code . ")";
+    }
+
+    return $return_array;
   }
 
   public function setDataSource(\PDO $pdo){
