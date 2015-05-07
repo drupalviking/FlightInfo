@@ -1,0 +1,83 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 06/05/15
+ * Time: 13:26
+ */
+$this->form->setAttribute('class','form-horizontal');
+?>
+<div class="layout layout--three-columns">
+  <section class="layout__section">
+    <h1 class="layout__headline layout__headline--center">Breyta flugupplýsingum</h1>
+
+    <?=$this->form()->openTag($this->form);?>
+
+    <div class="form-group">
+      <?=$this->formLabel($form->get('flightnumber'));?>
+      <?=$this->formElement($form->get('flightnumber')->setAttribute('class','form-control'));?>
+      <?=$this->formElementErrors($form->get('flightnumber'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('date'));?>
+      <?=$this->formElement($form->get('date')->setAttribute('class','form-control'));?>
+      <?=$this->formElementErrors($form->get('date'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('from'));?>
+      <?=$this->formElement($form->get('from')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('from'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('to'));?>
+      <?=$this->formElement($form->get('to')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('to'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('scheduled_departure'));?>
+      <?=$this->formElement($form->get('scheduled_departure')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('scheduled_departure'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('estimated_departure'));?>
+      <?=$this->formElement($form->get('estimated_departure')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('estimated_departure'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('actual_departure'));?>
+      <?=$this->formElement($form->get('actual_departure')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('actual_departure'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('scheduled_arrival'));?>
+      <?=$this->formElement($form->get('scheduled_arrival')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('scheduled_arrival'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('estimated_arrival'));?>
+      <?=$this->formElement($form->get('estimated_arrival')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('estimated_arrival'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('actual_arrival'));?>
+      <?=$this->formElement($form->get('actual_arrival')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('actual_arrival'));?>
+      <div class="form-group">
+        <?=$this->formLabel($form->get('status_departure'));?>
+        <?=$this->formElement($form->get('status_departure')->setAttribute('class','form-control avatar'));?>
+        <?=$this->formElementErrors($form->get('status_departure'));?>
+      </div>
+      <div class="form-group">
+        <?=$this->formLabel($form->get('status_arrival'));?>
+        <?=$this->formElement($form->get('status_arrival')->setAttribute('class','form-control avatar'));?>
+        <?=$this->formElementErrors($form->get('status_arrival'));?>
+      </div>
+      <div class="form-group">
+        <?=$this->formElement(
+          $form->get('submit')->setAttribute('class','btn btn-default')->setValue('Skrá')
+        );?>
+      </div>
+      <?= $this->form()->closeTag() ?>
+  </section>
+  <aside class="layout__aside"></aside>
+</div>

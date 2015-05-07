@@ -1,0 +1,39 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 06/05/15
+ * Time: 13:26
+ */
+$this->form->setAttribute('class','form-horizontal');
+?>
+<div class="layout layout--three-columns">
+  <section class="layout__section">
+    <h1 class="layout__headline layout__headline--center">Bæta við flugfélagi</h1>
+
+    <?=$this->form()->openTag($this->form);?>
+
+    <div class="form-group">
+      <?=$this->formLabel($form->get('name_icelandic'));?>
+      <?=$this->formElement($form->get('name_icelandic')->setAttribute('class','form-control'));?>
+      <?=$this->formElementErrors($form->get('name_icelandic'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('name_english'));?>
+      <?=$this->formElement($form->get('name_english')->setAttribute('class','form-control'));?>
+      <?=$this->formElementErrors($form->get('name_english'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formLabel($form->get('carrier_code'));?>
+      <?=$this->formElement($form->get('carrier_code')->setAttribute('class','form-control avatar'));?>
+      <?=$this->formElementErrors($form->get('carrier_code'));?>
+    </div>
+    <div class="form-group">
+      <?=$this->formElement(
+        $form->get('submit')->setAttribute('class','btn btn-default')->setValue('Skrá')
+      );?>
+    </div>
+    <?= $this->form()->closeTag() ?>
+  </section>
+  <aside class="layout__aside"></aside>
+</div>

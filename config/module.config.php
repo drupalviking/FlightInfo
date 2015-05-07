@@ -107,6 +107,68 @@ return array(
           ),
         ),
       ),
+      'airline' => array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+          'route' => '/flugfelag',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Airline',
+            'action' => 'list'
+          ),
+        ),
+        'may_terminate' => true,
+        'child_routes' => array(
+          'index' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/:id',
+              'constraints' => array(
+                'id' => '[0-9]*',
+              ),
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Airline',
+                'action' => 'index'
+              ),
+            )
+          ),
+          'list' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/sida/:no',
+              'constraints' => array(
+                'no' => '[0-9]*',
+              ),
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Airline',
+                'action' => 'list'
+              ),
+            )
+          ),
+          'create' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/skra',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Airline',
+                'action' => 'create'
+              ),
+            )
+          ),
+          'update' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/:id/uppfaera',
+              'constraints' => array(
+                'id' => '[0-9]*',
+              ),
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Airline',
+                'action' => 'update'
+              ),
+            )
+          ),
+        ),
+      ),
       'flight' => array(
         'type' => 'Zend\Mvc\Router\Http\Literal',
         'options' => array(
@@ -196,6 +258,7 @@ return array(
       'FlightInfo\Controller\User' => 'FlightInfo\Controller\UserController',
       'FlightInfo\Controller\Auth' => 'FlightInfo\Controller\AuthController',
       'FlightInfo\Controller\Airport' => 'FlightInfo\Controller\AirportController',
+      'FlightInfo\Controller\Airline' => 'FlightInfo\Controller\AirlineController',
       'FlightInfo\Controller\Flight' => 'FlightInfo\Controller\FlightController',
     ),
   ),

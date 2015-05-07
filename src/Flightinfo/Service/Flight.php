@@ -35,7 +35,16 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
   public function get( $id ){
     try{
       $statement = $this->pdo->prepare("
-          SELECT * FROM Flight WHERE id = :id
+          SELECT f.id, f.flightnumber, f.date, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
+          f.scheduled_departure, f.estimated_departure, f.actual_departure, f.scheduled_arrival, f.estimated_arrival, f.actual_arrival, f.status_departure, f.status_arrival
+          FROM flight_info.Flight f
+          INNER JOIN flight_info.Airport a
+          ON f.from = a.id
+          INNER JOIN flight_info.Airport a2
+          ON f.to = a2.id
+          INNER JOIN flight_info.User u
+          on f.last_modified_by = u.id
+          WHERE f.id = :id
       ");
       $statement->execute(array(
         'id' => $id
@@ -48,7 +57,6 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
     }catch (PDOException $e){
       throw new Exception("Can't get flight item. flight:[{$id}]",0,$e);
     }
-
   }
 
   /**

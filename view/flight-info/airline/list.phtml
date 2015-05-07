@@ -1,0 +1,30 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 07/05/15
+ * Time: 10:42
+ */
+?>
+<h1>Flugfélög</h1>
+<p><a href="<?=$this->url('airline/create');?>" class="create">Nýtt flugfélag</a></p>
+<table>
+  <thead>
+    <tr>
+      <td>Carrier kóði</td>
+      <td>Íslenskt nafn</td>
+      <td>Erlent nafn</td>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach( $this->airlines as $airline ) : ?>
+      <tr>
+        <td><a href="<?=$this->url('airline/index',array('id'=>$airline->id));?>" class="update"><?=$airline->carrier_code; ?></a></td>
+        <td><?=$airline->name_icelandic; ?></td>
+        <td><?=$airline->name_english; ?></td>
+        <td><a href="<?=$this->url('airline/update',array('id'=>$airline->id));?>" class="update">uppfæra</a></td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+<p>Athugið að flugfélagið Óþekkt flugfélag VERÐUR að vera til, það má ALLS EKKI eyða því!</p>

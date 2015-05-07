@@ -1,0 +1,16 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 07/05/15
+ * Time: 10:42
+ */
+?>
+<h1>Flugfélag</h1>
+<h2><?=$this->airline->name_icelandic;?></h2>
+<ul>
+  <li>Enskt nafn: <?=$this->airline->name_english;?></li>
+  <li>Carrier kóði: <?=$this->airline->carrier_code;?></li>
+</ul>
+<p><a href="<?=$this->url('airline/update',array('id'=>$this->airline->id));?>" class="update">uppfæra</a></p>
+<p><a href="<?=$this->url('airline');?>">Aftur í lista</a></p>
