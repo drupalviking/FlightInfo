@@ -214,4 +214,8 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
     $mins = substr( $time, 3, 2 );
     return (int)($hours * 60 * 60) + (int)($mins * 60);
   }
+
+  public function _getCarrierCodeFromFlightNumber( $flight_number ){
+    return preg_replace("/[^A-Z]+/", "", $flight_number);
+  }
 }

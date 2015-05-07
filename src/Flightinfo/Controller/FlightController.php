@@ -29,6 +29,7 @@ class FlightController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
+    $airlineService = $sm->get('FlightInfo\Service\Airline');
 
     $form = new FlightForm($airportService);
     $form->setAttribute('action', $this->url()->fromRoute('flight/create'));
@@ -37,6 +38,11 @@ class FlightController extends AbstractActionController{
       $form->setData($this->request->getPost());
       if ($form->isValid()) {
         $data = $form->getData();
+        //Veit ekki hvort ég eigi að færa þetta í Service eða hafa þetta hér?!?!?!?!?!?
+        $carrier_code = $flightService->_getCarrierCodeFromFlightNumber($data['flight_number']);
+        $airline = $airlineService->findByCarrierCode($carrier_code);
+        $data['airline'] = $airline->id;
+        ///////////////////////////////////////
         unset($data['submit']);
         $id = $flightService->create($data);
 
@@ -56,6 +62,7 @@ class FlightController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
+    $airlineService = $sm->get('FlightInfo\Service\Airline');
 
     //FLIGHT FOUND
     //
@@ -83,6 +90,11 @@ class FlightController extends AbstractActionController{
         $form->setData($this->request->getPost());
         if ($form->isValid()) {
           $data = $form->getData();
+          //Veit ekki hvort ég eigi að færa þetta í Service eða hafa þetta hér?!?!?!?!?!?
+          $carrier_code = $flightService->_getCarrierCodeFromFlightNumber($data['flightnumber']);
+          $airline = $airlineService->findByCarrierCode($carrier_code);
+          $data['airline'] = $airline->id;
+          ///////////////////////////////////////
           unset($data['submit']);
           $id = $flightService->update($this->params()->fromRoute('id', 0), $data);
 

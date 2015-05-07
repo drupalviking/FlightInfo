@@ -80,6 +80,32 @@ class Airline extends AbstractService implements DataSourceAwareInterface {
     }
   }
 
+  public function findByCarrierCode($carrier_code){
+    try{
+      $statement = $this->pdo->prepare("
+            SELECT * FROM Airline
+            WHERE carrier_code = :cc
+        ");
+      $statement->execute(array(
+        'cc' => $carrier_code
+      ));
+      $airline = $statement->fetchObject();
+
+      if (!$airline) {
+        $statement = $this->pdo->prepare("
+          SELECT * FROM Airline
+          WHERE id = 1
+      ");
+        $statement->execute();
+        $airline = $statement->fetchObject();
+      }
+
+      return $airline;
+    } catch (PDOException $e) {
+      throw new Exception("Can't get airline item. airline:[{$id}]", 0, $e);
+    }
+  }
+
   /**
    * Create airline entry.
    *
