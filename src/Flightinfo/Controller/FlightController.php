@@ -17,6 +17,9 @@ class FlightController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
+    $XMLService = $sm->get('FlightInfo\Service\XMLStream');
+
+    $XMLService->getStream(false, "RKV");
 
     //FLIGHT FOUND
     //

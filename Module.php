@@ -76,12 +76,13 @@ class Module
 				},
 			),
 			'invokables' => [
-				'FlightInfo\Service\User' 		=> 'FlightInfo\Service\User',
-				'FlightInfo\Auth\Adapter'		=> 'FlightInfo\Auth\Adapter',
-				'FlightInfo\Service\Airport' => 'FlightInfo\Service\Airport',
-				'FlightInfo\Service\Airline' => 'FlightInfo\Service\Airline',
-				'FlightInfo\Service\Flight' => 'FlightInfo\Service\Flight',
+				'FlightInfo\Service\User'					=> 'FlightInfo\Service\User',
+				'FlightInfo\Auth\Adapter'					=> 'FlightInfo\Auth\Adapter',
+				'FlightInfo\Service\Airport' 			=> 'FlightInfo\Service\Airport',
+				'FlightInfo\Service\Airline' 			=> 'FlightInfo\Service\Airline',
+				'FlightInfo\Service\Flight' 			=> 'FlightInfo\Service\Flight',
 				'FlightInfo\Service\Flightnumber' => 'FlightInfo\Service\Flightnumber',
+				'FlightInfo\Service\XMLStream' 	=> 'FlightInfo\Service\XMLStream',
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',
