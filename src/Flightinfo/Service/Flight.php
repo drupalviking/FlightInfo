@@ -13,6 +13,8 @@ setlocale(LC_ALL, 'is_IS');
 use PDOException;
 use FlightInfo\Lib\DataSourceAwareInterface;
 use FlightInfo\Service\DatabaseService;
+use FlightInfo\Service\Flightnumber;
+use FlightInfo\Service\Airport;
 
 class Flight implements DataSourceAwareInterface {
 
@@ -50,6 +52,43 @@ class Flight implements DataSourceAwareInterface {
       ");
       $statement->execute(array(
         'id' => $id
+      ));
+      $flight = $statement->fetchObject();
+
+      if( !$flight ){ return false; }
+
+      return $flight;
+    }catch (PDOException $e){
+      throw new Exception("Can't get flight item. flight:[{$id}]",0,$e);
+    }
+  }
+
+  /**
+   * Get one flight entry.
+   *
+   * @param int $id event ID
+   * @return \stdClass
+   * @throws Exception
+   */
+  public function getByFlightnumberAndDate( $flightnumber, $date ){
+    try{
+      $statement = $this->pdo->prepare("
+          SELECT f.id, f.flightnumber, al.name_icelandic, f.date, f.from as airport_from_id, f.to as airport_to_id, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
+          f.scheduled_departure, f.estimated_departure, f.actual_departure, f.scheduled_arrival, f.estimated_arrival, f.actual_arrival, f.status_departure, f.status_arrival
+          FROM flight_info.Flight f
+          INNER JOIN flight_info.Airport a
+          ON f.from = a.id
+          INNER JOIN flight_info.Airport a2
+          ON f.to = a2.id
+          INNER JOIN flight_info.User u
+          on f.last_modified_by = u.id
+          INNER JOIN flight_info.Airline al
+          ON f.airline = al.id
+          WHERE f.flightnumber = :fn AND f.date = :dt
+      ");
+      $statement->execute(array(
+        'fn' => $flightnumber,
+        'dt' => $date,
       ));
       $flight = $statement->fetchObject();
 
@@ -119,6 +158,28 @@ class Flight implements DataSourceAwareInterface {
     }
 
   }
+
+  /**
+   * Create flight entry from stream
+   *
+   * @param array $data
+   * @return int ID
+   * @throws Exception
+   */
+  public function createFromStream( array $data ){
+    try{
+      $insertString = $this->insertString('Flight',$data);
+      $statement = $this->pdo->prepare($insertString);
+      $statement->execute($data);
+      $id = (int)$this->pdo->lastInsertId();
+      $data['id'] = $id;
+      return $id;
+    }catch (PDOException $e){
+      throw new Exception("Can't create flight entry",0,$e);
+    }
+
+  }
+
   /**
    * Update one entry.
    *
@@ -156,7 +217,7 @@ class Flight implements DataSourceAwareInterface {
     if( ( $news = $this->get( $id ) ) != false ){
       try{
         $statement = $this->pdo->prepare('
-                DELETE FROM `Airport`
+                DELETE FROM `Flight`
                 WHERE id = :id');
         $statement->execute(array(
           'id' => $id
@@ -171,11 +232,36 @@ class Flight implements DataSourceAwareInterface {
     }
   }
 
+  public function processStream(array $obj){
+    foreach($obj[0]->destination as $flight_stream){
+      if( isset($flight_stream->flights->flight)){
+        $this->_processFlights($flight_stream->flights->flight, false);
+      }
+    }
+    foreach($obj[1]->destination as $flight_stream){
+      if( isset($flight_stream->flights->flight)){
+        $this->_processFlights($flight_stream->flights->flight, true);
+      }
+    }
+  }
+
   public function setDataSource(\PDO $pdo){
     $this->pdo = $pdo;
   }
 
-  public function _getSecondsFromTime( $time ) {
+  protected function _processFlights($flights, $arrivals = false){
+    //The stream returns either an array of flights or just one object
+    if(is_array($flights)){
+      foreach($flights as $flight){
+        $this->_processOneFlight($flight, $arrivals);
+      }
+    }
+    else if(is_object($flights)){
+      $this->_processOneFlight($flights, $arrivals);
+    }
+  }
+
+  protected function _getSecondsFromTime( $time ) {
     $hours = substr($time, 0, 2);
     $mins = substr($time, 3, 2);
     return (int) ($hours * 60 * 60) + (int) ($mins * 60);
@@ -201,5 +287,51 @@ class Flight implements DataSourceAwareInterface {
       : null;
 
     return $data;
+  }
+
+  protected function _processOneFlight( $flight, $arrivals ){
+    $flightNumberService = new Flightnumber();
+    $flightNumberService->setDataSource($this->pdo);
+    $airportService = new Airport();
+    $airportService->setDataSource($this->pdo);
+
+    $date = strtotime(substr($flight->departure->scheduled, 0, 10));
+    $flight_in_database = $this->getByFlightnumberAndDate($flight->flight_number, $date);
+    if($flight_in_database){
+      //We already have this in database and have to update
+    }
+    else{
+      $data = array();
+      $data['last_modified'] = time();
+      $data['last_modified_by'] = 1;
+      $data['flightnumber'] = $flight->flight_number;
+      $data['date'] = $date;
+      $data['scheduled_departure'] = $date + (int)$this->_getSecondsFromTime(substr($flight->departure->scheduled, 11, 5));
+      $data['scheduled_arrival'] = $date + (int)$this->_getSecondsFromTime(substr($flight->arrival->scheduled, 11, 5));
+      $data['airline'] = $flightNumberService->getAirlineFromFlightNumber($flight->flight_number)->id;
+      $data['from'] = $airportService->getByCode($flight->departure->airport)->id;
+      $data['to'] = $airportService->getByCode($flight->arrival->airport)->id;
+
+      if(!$arrivals){
+        $data['status_departure'] = $flight->status;
+        $data['estimated_departure'] = ($flight->departure->estimate != "N/A")
+          ? $date + (int)$this->_getSecondsFromTime($flight->departure->estimate)
+          : null;
+        $data['actual_departure'] = ($flight->departure->actual != "N/A")
+          ? $date + (int)$this->_getSecondsFromTime($flight->departure->actual)
+          : null;
+      }
+      else{
+        $data['status_arrival'] = $flight->status;
+        $data['estimated_arrival'] = ($flight->arrival->estimate != "N/A")
+          ? $date + (int)$this->_getSecondsFromTime($flight->arrival->estimate)
+          : null;
+        $data['actual_arrival'] = ($flight->arrival->estimate != "N/A")
+          ? $date + (int)$this->_getSecondsFromTime($flight->arrival->actual)
+          : null;
+      }
+
+      $this->createFromStream($data);
+    }
   }
 }

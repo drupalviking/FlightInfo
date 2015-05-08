@@ -46,7 +46,42 @@ class Airport implements DataSourceAwareInterface {
     }catch (PDOException $e){
       throw new Exception("Can't get airport item. airport:[{$id}]",0,$e);
     }
+  }
 
+  /**
+   * Get one airport entry by Airport Code
+   *
+   * @param int $id event ID
+   * @return \stdClass
+   * @throws Exception
+   */
+  public function getByCode( $string ){
+    $code = substr( $string, strpos( $string, '(') + 1, 3);
+    $airport = substr( $string, 0, strpos( $string, '(') - 1);
+    try{
+      $statement = $this->pdo->prepare("
+                SELECT * FROM Airport WHERE airport_code = :code
+            ");
+      $statement->execute(array(
+        'code' => $code
+      ));
+      $airport = $statement->fetchObject();
+
+      if( !$airport ){
+        $data['name'] = $airport;
+        $data['airport_code'] = $code;
+        $data['created_date'] = time();
+        $data['created_by'] = 1;
+        $data['last_modified'] = time();
+        $data['last_modified_by'] = 1;
+        $airportid = $this->create($data);
+        $airport = $this->get($airportid);
+      }
+
+      return $airport;
+    }catch (PDOException $e){
+      throw new Exception("Can't get airport item. airport:[{$id}]",0,$e);
+    }
   }
 
   /**

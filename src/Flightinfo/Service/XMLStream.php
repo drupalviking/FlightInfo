@@ -25,13 +25,22 @@ class XMLStream implements DataSourceAwareInterface {
    */
   private $pdo;
 
+  public function bootstrap(array $airports){
+    $arr = array();
+    $airportstring = $this->_createAirportString($airports);
+    $arr[] = $this->_getStream(false, $airportstring, 'is_IS');
+    $arr[] = $this->_getStream(true, $airportstring, 'is_IS');
+
+    return $arr;
+  }
+
   /**
    * @param bool $arrivals
    * @param string $airport_code
    * @param string $locale
-   * @return stdClass $obj
+   * @return Array $obj
    */
-  public function getStream($arrivals=false, $airport_code, $locale = 'is_IS'){
+  protected function _getStream($arrivals=false, $airport_code, $locale = 'is_IS'){
     $concatstring = ($arrivals) ? "arrivals" : "departures";
     $concatstring2 = ($arrivals) ? "Arrival" : "Departure";
     $url = SOURCE_URL . $concatstring . ".xml?RequestType=" . $concatstring . "&" . $concatstring2 . "=" . strtoupper($airport_code) . "&GapBefore=2&GapAfter=14&locale=" . $locale;
@@ -40,6 +49,15 @@ class XMLStream implements DataSourceAwareInterface {
     $json = json_encode($xml);
     $obj = json_decode($json);
     return $obj;
+  }
+
+  protected function _createAirportString(array $airports){
+    $string = null;
+    foreach( $airports as $airport ){
+      $string .= $airport->airport_code . "_";
+    }
+
+    return $string;
   }
 
   public function setDataSource(\PDO $pdo) {
