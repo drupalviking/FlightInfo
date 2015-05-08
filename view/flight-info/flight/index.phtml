@@ -6,7 +6,84 @@
  * Time: 09:59
  */
 ?>
-<h1>Flug</h1>
-<pre>
-  <?php print_r( $this->flight); ?>
-</pre>
+<style>
+  #map-canvas {
+    width: 1000px;
+    height: 800px;
+  }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+  function initialize() {
+    var bounds = new google.maps.LatLngBounds();
+    var locations = [
+      ['<?=$this->airport_from->name;?>', '<?=$this->airport_from->airport_code;?>', <?=$this->airport_from->latitude; ?>, <?=$this->airport_from->longitude; ?>],
+      ['<?=$this->airport_to->name;?>', '<?=$this->airport_to->airport_code;?>', <?=$this->airport_to->latitude; ?>, <?=$this->airport_to->longitude; ?>],
+    ];
+    var mapCanvas = document.getElementById('map-canvas');
+    var mapOptions = {
+      center: new google.maps.LatLng(64.9312763, -19.0211697),
+      zoom: 7,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    var icons = {
+      airport: {
+        icon: 'images/airport.jpg'
+      }
+    }
+
+    var map = new google.maps.Map(mapCanvas, mapOptions);
+    var infowindow = new google.maps.InfoWindow;
+    var marker, i;
+
+    var flightPlanCoordinates = [
+      new google.maps.LatLng(<?=$this->airport_from->latitude; ?>, <?=$this->airport_from->longitude; ?>),
+      new google.maps.LatLng(<?=$this->airport_to->latitude; ?>, <?=$this->airport_to->longitude; ?>),
+    ];
+    var flightPath = new google.maps.Polyline({
+      path: flightPlanCoordinates,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    flightPath.setMap(map);
+
+    for( i=0; i < locations.length; i++){
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][2], locations[i][3]),
+        map: map
+      });
+
+      //extend the bounds to include each marker's position
+      bounds.extend(marker.position);
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i][0] + " (" + locations[i][1] + ")");
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+
+    map.fitBounds(bounds);
+  }
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+<h1>Flug <?=$this->flight->name_icelandic;?> <?=$this->flight->flightnumber; ?> þann <?=strftime('%d. %B %Y', strtotime($this->flight->date));?></h1>
+<div id="map-canvas"></div>
+<h2>Brottfarartímar</h2>
+<ul>
+  <li>Áætlun: <?=$this->flight->scheduled_departure;?></li>
+  <li>Staðfest áætlun: <?=$this->flight->estimated_departure;?></li>
+  <li>Rauntími: <?=$this->flight->actual_departure;?></li>
+</ul>
+<p><strong>Staða: </strong><?=$this->flight->status_departure;?></p>
+<h2>Komutímar</h2>
+<ul>
+  <li>Áætlun: <?=$this->flight->scheduled_arrival;?></li>
+  <li>Staðfest áætlun: <?=$this->flight->estimated_arrival;?></li>
+  <li>Rauntími: <?=$this->flight->actual_arrival;?></li>
+</ul>
+<p><strong>Staða: </strong><?=$this->flight->status_arrival;?></p>

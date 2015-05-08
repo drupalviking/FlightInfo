@@ -35,7 +35,7 @@ class Flight implements DataSourceAwareInterface {
   public function get( $id ){
     try{
       $statement = $this->pdo->prepare("
-          SELECT f.id, f.flightnumber, al.name_icelandic, f.date, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
+          SELECT f.id, f.flightnumber, al.name_icelandic, f.date, f.from as airport_from_id, f.to as airport_to_id, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
           f.scheduled_departure, f.estimated_departure, f.actual_departure, f.scheduled_arrival, f.estimated_arrival, f.actual_arrival, f.status_departure, f.status_arrival
           FROM flight_info.Flight f
           INNER JOIN flight_info.Airport a
@@ -72,7 +72,7 @@ class Flight implements DataSourceAwareInterface {
   public function fetchAll($date){
     try{
       $statement = $this->pdo->prepare("
-					SELECT f.id, f.flightnumber, al.name_icelandic, f.date, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
+					SELECT f.id, f.flightnumber, al.name_icelandic, f.date, f.from as airport_from_id, f.to as airport_to_id, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
           f.scheduled_departure, f.estimated_departure, f.actual_departure, f.scheduled_arrival, f.estimated_arrival, f.actual_arrival, f.status_departure, f.status_arrival
           FROM flight_info.Flight f
           INNER JOIN flight_info.Airport a

@@ -16,12 +16,20 @@ class FlightController extends AbstractActionController{
   public function indexAction(){
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
+    $airportService = $sm->get('FlightInfo\Service\Airport');
 
     //FLIGHT FOUND
     //
     if (($flight = $flightService->get($this->params()->fromRoute('id', 0))) != false) {
       $flight = $this->_convertEpochToHumanReadable($flight);
-      return new ViewModel(['flight' => $flight]);
+      $airport_from = $airportService->get($flight->airport_from_id);
+      $airport_to = $airportService->get($flight->airport_to_id);
+
+      return new ViewModel([
+        'flight' => $flight,
+        'airport_from' => $airport_from,
+        'airport_to' => $airport_to,
+      ]);
     }
   }
 
