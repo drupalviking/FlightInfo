@@ -14,7 +14,7 @@ use PDOException;
 use FlightInfo\Lib\DataSourceAwareInterface;
 use FlightInfo\Service\DatabaseService;
 
-class Airline extends AbstractService implements DataSourceAwareInterface {
+class Airline implements DataSourceAwareInterface {
 
   use DatabaseService;
 
@@ -77,32 +77,6 @@ class Airline extends AbstractService implements DataSourceAwareInterface {
       }, $statement->fetchAll());
     } catch (PDOException $e) {
       throw new Exception("Can't get next airline item.", 0, $e);
-    }
-  }
-
-  public function findByCarrierCode($carrier_code){
-    try{
-      $statement = $this->pdo->prepare("
-            SELECT * FROM Airline
-            WHERE carrier_code = :cc
-        ");
-      $statement->execute(array(
-        'cc' => $carrier_code
-      ));
-      $airline = $statement->fetchObject();
-
-      if (!$airline) {
-        $statement = $this->pdo->prepare("
-          SELECT * FROM Airline
-          WHERE id = 1
-      ");
-        $statement->execute();
-        $airline = $statement->fetchObject();
-      }
-
-      return $airline;
-    } catch (PDOException $e) {
-      throw new Exception("Can't get airline item. airline:[{$id}]", 0, $e);
     }
   }
 

@@ -81,6 +81,7 @@ class Module
 				'FlightInfo\Service\Airport' => 'FlightInfo\Service\Airport',
 				'FlightInfo\Service\Airline' => 'FlightInfo\Service\Airline',
 				'FlightInfo\Service\Flight' => 'FlightInfo\Service\Flight',
+				'FlightInfo\Service\Flightnumber' => 'FlightInfo\Service\Flightnumber',
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',

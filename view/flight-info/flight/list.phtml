@@ -1,0 +1,50 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 07/05/15
+ * Time: 14:05
+ */
+?>
+<h1>Flug, dagsett <?=strftime('%d. %B %Y');?></h1>
+<table>
+  <thead>
+    <tr>
+      <td>Flugfélag</td>
+      <td>Flugnúmer</td>
+      <td>Frá</td>
+      <td>Brottfarartímar</td>
+      <td>Staða brottfarar</td>
+      <td>Til</td>
+      <td>Komutímar</td>
+      <td>Staða komu</td>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach( $this->flights as $flight ) : ?>
+      <tr>
+        <td><?=$flight->name_icelandic; ?></td>
+        <td><?=$flight->flightnumber;?></td>
+        <td><?=$flight->airport_from;?></td>
+        <td>
+          <ul>
+            <li>Áætluð brottför: <?=$flight->scheduled_departure;?></li>
+            <li>Staðfest brottför: <?=(isset($flight->estimated_departure)) ? $flight->estimated_departure : "";?></li>
+            <li>Rauntími brottfarar: <?=($flight->actual_departure) ? $flight->actual_departure : "";?></li>
+          </ul>
+        </td>
+        <td><?=$flight->status_departure;?></td>
+        <td><?=$flight->airport_to;?></td>
+        <td>
+          <ul>
+            <li>Áætlaður komutími: <?=$flight->scheduled_arrival;?></li>
+            <li>Staðfestur komutími: <?=($flight->estimated_arrival) ? $flight->estimated_arrival : '';?></li>
+            <li>Rauntími lendingar: <?=($flight->actual_arrival) ? $flight->actual_arrival : "";?></li>
+          </ul>
+        </td>
+        <td><?=$flight->status_arrival;?></td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+<?php var_dump( $this->flights ); ?>

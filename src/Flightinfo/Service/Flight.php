@@ -14,7 +14,7 @@ use PDOException;
 use FlightInfo\Lib\DataSourceAwareInterface;
 use FlightInfo\Service\DatabaseService;
 
-class Flight extends AbstractService implements DataSourceAwareInterface {
+class Flight implements DataSourceAwareInterface {
 
   use DatabaseService;
 
@@ -35,7 +35,7 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
   public function get( $id ){
     try{
       $statement = $this->pdo->prepare("
-          SELECT f.id, f.flightnumber, f.date, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
+          SELECT f.id, f.flightnumber, al.name_icelandic, f.date, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
           f.scheduled_departure, f.estimated_departure, f.actual_departure, f.scheduled_arrival, f.estimated_arrival, f.actual_arrival, f.status_departure, f.status_arrival
           FROM flight_info.Flight f
           INNER JOIN flight_info.Airport a
@@ -44,6 +44,8 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
           ON f.to = a2.id
           INNER JOIN flight_info.User u
           on f.last_modified_by = u.id
+          INNER JOIN flight_info.Airline al
+          ON f.airline = al.id
           WHERE f.id = :id
       ");
       $statement->execute(array(
@@ -67,29 +69,27 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
    * @return \stdClass
    * @throws Exception
    */
-  public function fetchAll($page=null, $count=10){
+  public function fetchAll($date){
     try{
-      if($page !== null){
-        $statement = $this->pdo->prepare("
-					SELECT * FROM `Flight` F
-					ORDER BY F.date DESC
-					LIMIT {$page},{$count}
+      $statement = $this->pdo->prepare("
+					SELECT f.id, f.flightnumber, al.name_icelandic, f.date, a.name as airport_from, a.airport_code as airportcode_from, a2.name as airport_to, a2.airport_code as airportcode_to, f.last_modified, u.name,
+          f.scheduled_departure, f.estimated_departure, f.actual_departure, f.scheduled_arrival, f.estimated_arrival, f.actual_arrival, f.status_departure, f.status_arrival
+          FROM flight_info.Flight f
+          INNER JOIN flight_info.Airport a
+          ON f.from = a.id
+          INNER JOIN flight_info.Airport a2
+          ON f.to = a2.id
+          INNER JOIN flight_info.User u
+          on f.last_modified_by = u.id
+          INNER JOIN flight_info.Airline al
+          ON f.airline = al.id
+					WHERE f.`date` = :dt
 				");
-        $statement->execute();
-      }else{
-        $statement = $this->pdo->prepare("
-					SELECT * FROM `Flight` F
-					ORDER BY F.date DESC
-				");
-        $statement->execute();
-      }
+      $statement->execute(array(
+        'dt' => $date
+      ));
 
-      return array_map(function($i) use ($statement){
-        //$i->created_date = $i->created_date;
-        //$i->modified_date = new DateTime($i->modified_date);
-
-        return $i;
-      },$statement->fetchAll());
+      return $statement->fetchAll();
     }catch (PDOException $e){
       throw new Exception("Can't get next flight item.",0,$e);
     }
@@ -103,25 +103,8 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
    * @throws Exception
    */
   public function create( array $data ){
-    $date_at_midnight = strtotime($data['date']);
-
     try{
-      $data['date'] = $date_at_midnight;
-      $data['scheduled_departure'] = (int)$this->_getSecondsFromTime($data['scheduled_departure']) + $date_at_midnight;
-      $data['estimated_departure'] = (is_string($data['estimated_departure']))
-        ? (int)$this->_getSecondsFromTime($data['estimated_departure']) + $date_at_midnight
-        : null;
-      $data['actual_departure'] = (is_string($data['actual_departure']))
-        ? (int)$this->_getSecondsFromTime($data['actual_departure']) + $date_at_midnight
-        : null;
-      $data['scheduled_arrival'] = (int)$this->_getSecondsFromTime($data['scheduled_arrival']) + $date_at_midnight;
-      $data['estimated_arrival'] = (is_string($data['estimated_arrival']))
-        ?(int)$this->_getSecondsFromTime($data['estimated_arrival']) + $date_at_midnight
-        : null;
-      $data['actual_arrival'] = (is_string($data['actual_arrival']))
-        ? (int)$this->_getSecondsFromTime($data['actual_arrival']) + $date_at_midnight
-        : null;
-
+      $data = $this->_sanitiseTimeData($data);
       $data['last_modified'] = time();
       $data['last_modified_by'] = 1;
 
@@ -146,24 +129,8 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
    * @todo created_date
    */
   public function update( $id, array $data ){
-    $date_at_midnight = strtotime($data['date']);
-
     try{
-      $data['date'] = $date_at_midnight;
-      $data['scheduled_departure'] = (int)$this->_getSecondsFromTime($data['scheduled_departure']) + $date_at_midnight;
-      $data['estimated_departure'] = (is_string($data['estimated_departure']))
-        ? (int)$this->_getSecondsFromTime($data['estimated_departure']) + $date_at_midnight
-        : null;
-      $data['actual_departure'] = (is_string($data['actual_departure']))
-        ? (int)$this->_getSecondsFromTime($data['actual_departure']) + $date_at_midnight
-        : null;
-      $data['scheduled_arrival'] = (int)$this->_getSecondsFromTime($data['scheduled_arrival']) + $date_at_midnight;
-      $data['estimated_arrival'] = (is_string($data['estimated_arrival']))
-        ?(int)$this->_getSecondsFromTime($data['estimated_arrival']) + $date_at_midnight
-        : null;
-      $data['actual_arrival'] = (is_string($data['actual_arrival']))
-        ? (int)$this->_getSecondsFromTime($data['actual_arrival']) + $date_at_midnight
-        : null;
+      $data = $this->_sanitiseTimeData($data);
 
       $data['last_modified'] = time();
       $data['last_modified_by'] = 1;
@@ -172,11 +139,10 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
       $statement = $this->pdo->prepare($updateString);
       $statement->execute($data);
       $data['id'] = $id;
-      return $statement->rowCount();
+      return $id;
     }catch (PDOException $e){
       throw new Exception("Can't update flight entry",0,$e);
     }
-
   }
 
   /**
@@ -209,13 +175,31 @@ class Flight extends AbstractService implements DataSourceAwareInterface {
     $this->pdo = $pdo;
   }
 
-  public function _getSecondsFromTime( $time ){
-    $hours = substr( $time, 0, 2 );
-    $mins = substr( $time, 3, 2 );
-    return (int)($hours * 60 * 60) + (int)($mins * 60);
+  public function _getSecondsFromTime( $time ) {
+    $hours = substr($time, 0, 2);
+    $mins = substr($time, 3, 2);
+    return (int) ($hours * 60 * 60) + (int) ($mins * 60);
   }
 
-  public function _getCarrierCodeFromFlightNumber( $flight_number ){
-    return preg_replace("/[^A-Z]+/", "", $flight_number);
+  protected function _sanitiseTimeData($data){
+    $date_at_midnight = strtotime($data['date']);
+
+    $data['date'] = $date_at_midnight;
+    $data['scheduled_departure'] = (int)$this->_getSecondsFromTime($data['scheduled_departure']) + $date_at_midnight;
+    $data['estimated_departure'] = (strlen($data['estimated_departure'])>0)
+      ? (int)$this->_getSecondsFromTime($data['estimated_departure']) + $date_at_midnight
+      : null;
+    $data['actual_departure'] = (strlen($data['actual_departure'])>0)
+      ? (int)$this->_getSecondsFromTime($data['actual_departure']) + $date_at_midnight
+      : null;
+    $data['scheduled_arrival'] = (int)$this->_getSecondsFromTime($data['scheduled_arrival']) + $date_at_midnight;
+    $data['estimated_arrival'] = (strlen($data['estimated_arrival'])>0)
+      ?(int)$this->_getSecondsFromTime($data['estimated_arrival']) + $date_at_midnight
+      : null;
+    $data['actual_arrival'] = (strlen($data['actual_arrival'])>0)
+      ? (int)$this->_getSecondsFromTime($data['actual_arrival']) + $date_at_midnight
+      : null;
+
+    return $data;
   }
 }
