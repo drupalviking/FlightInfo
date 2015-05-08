@@ -24,7 +24,7 @@
     <?php foreach( $this->flights as $flight ) : ?>
       <tr>
         <td><?=$flight->name_icelandic; ?></td>
-        <td><?=$flight->flightnumber;?></td>
+        <td><a href="<?=$this->url('flight/index',array('id'=>$flight->id))?>"><?=$flight->flightnumber;?></a></td>
         <td><?=$flight->airport_from;?></td>
         <td>
           <ul>
@@ -47,4 +47,3 @@
     <?php endforeach; ?>
   </tbody>
 </table>
-<?php var_dump( $this->flights ); ?>

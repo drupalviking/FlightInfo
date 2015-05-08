@@ -43,8 +43,7 @@ class XMLStream implements DataSourceAwareInterface {
   protected function _getStream($arrivals=false, $airport_code, $locale = 'is_IS'){
     $concatstring = ($arrivals) ? "arrivals" : "departures";
     $concatstring2 = ($arrivals) ? "Arrival" : "Departure";
-    $url = SOURCE_URL . $concatstring . ".xml?RequestType=" . $concatstring . "&" . $concatstring2 . "=" . strtoupper($airport_code) . "&GapBefore=2&GapAfter=14&locale=" . $locale;
-
+    $url = SOURCE_URL . $concatstring . ".xml?RequestType=" . $concatstring . "&" . $concatstring2 . "=" . strtoupper($airport_code) . "&GapBefore=10&GapAfter=14&locale=" . $locale;
     $xml = simplexml_load_file($url);
     $json = json_encode($xml);
     $obj = json_decode($json);
