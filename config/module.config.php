@@ -260,6 +260,7 @@ return array(
       'FlightInfo\Controller\Airport' => 'FlightInfo\Controller\AirportController',
       'FlightInfo\Controller\Airline' => 'FlightInfo\Controller\AirlineController',
       'FlightInfo\Controller\Flight' => 'FlightInfo\Controller\FlightController',
+      'FlightInfo\Controller\Console' => 'FlightInfo\Controller\ConsoleController',
     ),
   ),
   'view_helpers' => array(
@@ -295,5 +296,16 @@ return array(
     // Placeholder for console routes
   'console' => array(
     'router' => array(),
+    'routes' => array(
+      'queue-events' => array(
+        'options' => array(
+          'route'    => 'queue events',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Console',
+            'action'     => 'process-stream'
+          )
+        )
+      ),
+    ),
   ),
 );

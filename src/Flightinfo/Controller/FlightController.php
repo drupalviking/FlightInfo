@@ -18,15 +18,6 @@ class FlightController extends AbstractActionController{
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
 
-    //////////////////////////////////////////
-    //// XML STREAM FUNCTIONS
-    //// @todo: Move to console controller
-    /////////////////////////////////////////
-    $XMLService = $sm->get('FlightInfo\Service\XMLStream');
-    $XMLStreamObject = $XMLService->bootstrap($airportService->fetchAll());
-    $flightService->processStream( $XMLStreamObject );
-    /////////////////////////////////////////
-
     //FLIGHT FOUND
     //
     if (($flight = $flightService->get($this->params()->fromRoute('id', 0))) != false) {
