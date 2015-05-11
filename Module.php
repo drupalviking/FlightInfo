@@ -55,11 +55,12 @@ class Module
 		//SESSION
 		//	config and start session
 
+		/*
 		$sessionConfig = new SessionConfig();
 		$sessionConfig->setOptions($config['session']);
 		$sessionManager = new SessionManager($sessionConfig);
 		$sessionManager->start();
-		
+		*/
 	}
 	/**
 	 * Load the application config.
@@ -109,7 +110,7 @@ class Module
 				'FlightInfo\Service\Airline' 			=> 'FlightInfo\Service\Airline',
 				'FlightInfo\Service\Flight' 			=> 'FlightInfo\Service\Flight',
 				'FlightInfo\Service\Flightnumber' => 'FlightInfo\Service\Flightnumber',
-				'FlightInfo\Service\XMLStream' 	=> 'FlightInfo\Service\XMLStream',
+				'FlightInfo\Service\XMLStream' 		=> 'FlightInfo\Service\XMLStream',
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',

@@ -110,17 +110,15 @@ class AuthController extends AbstractActionController
    */
   public function loginAction()
   {
-    $auth = new AuthenticationService(new SessionStorag());
+    $auth = new AuthenticationService();
 
     //IS LOGGED IN
     //  user is logged in
     if ($auth->hasIdentity()) {
-      die("Have identity");
       return $this->redirect()->toRoute('notandi/index', ['id'=> $auth->getIdentity()->id]);
       //NOT LOGGED IN
       //  user is not logged in
     } else {
-      die("Don't have identity");
       $lostForm = new LostPasswordForm();
       $lostForm->setAttribute('action', $this->url()->fromRoute('access/lost-password'));
 

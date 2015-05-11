@@ -7,6 +7,9 @@
  */
 namespace FlightInfo\Service;
 
+date_default_timezone_set('UTC');
+setlocale(LC_ALL, 'is_IS');
+
 use \DateTime;
 use \PDOException;
 use FlightInfo\Lib\DataSourceAwareInterface;
@@ -49,8 +52,19 @@ class User implements DataSourceAwareInterface {
     } catch (PDOException $e) {
       throw new Exception("Can't get user. user:[{$id}]", 0, $e);
     }
+  }
 
-
+  public function fetchAll(){
+    try{
+      $statement = $this->pdo->prepare("
+        SELECT * FROM USER
+        ORDER BY name;
+      ");
+      $statement->execute();
+      return $statement->fetchAll();
+    } catch (PDOException $e) {
+      throw new Exception("Can't get users.", 0, $e);
+    }
   }
 
   public function createHash($id) {
