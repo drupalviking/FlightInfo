@@ -54,12 +54,12 @@ class Module
 			->get('Configuration');
 		//SESSION
 		//	config and start session
-		/*
+
 		$sessionConfig = new SessionConfig();
 		$sessionConfig->setOptions($config['session']);
 		$sessionManager = new SessionManager($sessionConfig);
 		$sessionManager->start();
-		*/
+		
 	}
 	/**
 	 * Load the application config.
