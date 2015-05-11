@@ -25,26 +25,6 @@ return array(
           ),
         ),
       ),
-      'auth-out' => array(
-        'type' => 'Zend\Mvc\Router\Http\Literal',
-        'options' => array(
-          'route' => '/utskra',
-          'defaults' => array(
-            'controller' => 'FlightInfo\Controller\Auth',
-            'action' => 'logout'
-          ),
-        ),
-      ),
-      'auth-in' => array(
-        'type' => 'Zend\Mvc\Router\Http\Literal',
-        'options' => array(
-          'route' => '/innskra',
-          'defaults' => array(
-            'controller' => 'FlightInfo\Controller\Auth',
-            'action' => 'login'
-          ),
-        ),
-      ),
       'airport' => array(
         'type' => 'Zend\Mvc\Router\Http\Literal',
         'options' => array(
@@ -295,16 +275,17 @@ return array(
   ),
     // Placeholder for console routes
   'console' => array(
-    'router' => array(),
-    'routes' => array(
-      'queue-events' => array(
-        'options' => array(
-          'route'    => 'queue events',
-          'defaults' => array(
-            'controller' => 'FlightInfo\Controller\Console',
-            'action'     => 'process-stream'
+    'router' => array(
+      'routes' => array(
+        'queue-events' => array(
+          'options' => array(
+            'route'    => 'process stream',
+            'defaults' => array(
+              'controller' => 'FlightInfo\Controller\Console',
+              'action'     => 'process-stream'
+            )
           )
-        )
+        ),
       ),
     ),
   ),

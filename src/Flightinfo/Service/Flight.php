@@ -123,6 +123,7 @@ class Flight implements DataSourceAwareInterface {
           INNER JOIN flight_info.Airline al
           ON f.airline = al.id
 					WHERE f.`date` = :dt
+					ORDER BY f.scheduled_departure
 				");
       $statement->execute(array(
         'dt' => $date
@@ -202,6 +203,31 @@ class Flight implements DataSourceAwareInterface {
       $data['id'] = $id;
       return $id;
     }catch (PDOException $e){
+      throw new Exception("Can't update flight entry",0,$e);
+    }
+  }
+
+  /**
+   * Update one entry from data stream
+   *
+   * @param $id news ID
+   * @param array $data
+   * @return int row count
+   * @throws Exception
+   * @todo created_date
+   */
+  public function updateFromStream( $id, array $data ){
+    try{
+      $data['last_modified'] = time();
+      $data['last_modified_by'] = 1;
+
+      $updateString = $this->updateString('Flight',$data, "id={$id}");
+      $statement = $this->pdo->prepare($updateString);
+      $statement->execute($data);
+      $data['id'] = $id;
+      return $id;
+    }catch (PDOException $e){
+      echo "<pre>"; print_r($e->getMessage());
       throw new Exception("Can't update flight entry",0,$e);
     }
   }
@@ -298,7 +324,73 @@ class Flight implements DataSourceAwareInterface {
     $date = strtotime(substr($flight->departure->scheduled, 0, 10));
     $flight_in_database = $this->getByFlightnumberAndDate($flight->flight_number, $date);
     if($flight_in_database){
-      //We already have this in database and have to update
+      $id = $flight_in_database->id;
+      $data = array();
+      /**
+       * The datastream is a little bit "whack" from Air Iceland.  When they have actual time of a flight
+       * (departure or arrival) they change the estimated time to N/A again.  This we want to prevent by
+       * checking if we have actual data there.  If we do and the data we're getting now is N/A, then we do
+       * nothing.  If the data in the database is null and we have time we want to make changes, and also
+       * if we have a timestamp and the new timestamp is different.
+       *
+       * We have to do this for both departure and arrival
+       */
+      if(!$arrivals) {
+        $data['status_departure'] = $flight->status;
+
+        if( strlen($flight->departure->scheduled) == 5 ){
+          //We have time, lets check if it's the same or not
+          $estimated_departure = $date + (int)$this->_getSecondsFromTime($flight->departure->scheduled);
+          if( $estimated_departure != $flight_in_database->estimated_departure ){
+            $data['estimated_departure'] = $estimated_departure;
+          }
+        }
+
+        if( strlen($flight->departure->estimate) == 5 ){
+          //We have time, lets check if it's the same or not
+          $estimated_departure = $date + (int)$this->_getSecondsFromTime($flight->departure->estimate);
+          if( $estimated_departure != $flight_in_database->estimated_departure ){
+            $data['estimated_departure'] = $estimated_departure;
+          }
+        }
+
+        if( strlen($flight->departure->actual) == 5 ){
+          //We have time, lets check if it's the same or not
+          $actual_departure = $date + (int)$this->_getSecondsFromTime($flight->departure->actual);
+          if( $actual_departure != $flight_in_database->actual_departure ){
+            $data['actual_departure'] = $actual_departure;
+          }
+        }
+      }
+      else{
+        $data['status_arrival'] = $flight->status;
+
+        if( strlen($flight->arrival->scheduled) == 5 ){
+          //We have time, lets check if it's the same or not
+          $estimated_arrival = $date + (int)$this->_getSecondsFromTime($flight->arrival->scheduled);
+          if( $estimated_arrival != $flight_in_database->estimated_arrival ){
+            $data['estimated_arrival'] = $estimated_arrival;
+          }
+        }
+
+        if( strlen($flight->arrival->estimate) == 5 ){
+          //We have time, lets check if it's the same or not
+          $estimated_arrival = $date + (int)$this->_getSecondsFromTime($flight->arrival->estimate);
+          if( $estimated_arrival != $flight_in_database->estimated_arrival ){
+            $data['estimated_arrival'] = $estimated_arrival;
+          }
+        }
+
+        if( strlen($flight->arrival->actual) == 5 ){
+          //We have time, lets check if it's the same or not
+          $actual_arrival = $date + (int)$this->_getSecondsFromTime($flight->arrival->actual);
+          if( $actual_arrival != $flight_in_database->actual_arrival ){
+            $data['actual_arrival'] = $actual_arrival;
+          }
+        }
+      }
+
+      $this->updateFromStream($id, $data);
     }
     else{
       $data = array();

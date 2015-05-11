@@ -11,6 +11,7 @@ use Zend\Authentication\AuthenticationService;
 use Zend\Http\Header\SetCookie;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Session\SessionManager;
+use Zend\Session\Storage\SessionStorage;
 use Zend\View\Model\ViewModel;
 
 use Zend\Session\Container;
@@ -20,7 +21,7 @@ use FlightInfo\Form\Login;
 date_default_timezone_set('UTC');
 
 /**
- * Login / Logout. Create Users and connect the via oAuth etc...
+ * Login / Logout. Create Users
  *
  * Class AuthController
  *
@@ -38,7 +39,7 @@ class AuthController extends AbstractActionController
    */
   public function createUserAction()
   {
-    $session = new Container('create_user');
+    $session = new Container('create');
     $sm = $this->getServiceLocator();
 
     $form = $sm->get('FlightInfo\Form\NewUserCredentials');
@@ -109,15 +110,17 @@ class AuthController extends AbstractActionController
    */
   public function loginAction()
   {
-    $auth = new AuthenticationService();
+    $auth = new AuthenticationService(new SessionStorag());
 
     //IS LOGGED IN
     //  user is logged in
     if ($auth->hasIdentity()) {
+      die("Have identity");
       return $this->redirect()->toRoute('notandi/index', ['id'=> $auth->getIdentity()->id]);
       //NOT LOGGED IN
       //  user is not logged in
     } else {
+      die("Don't have identity");
       $lostForm = new LostPasswordForm();
       $lostForm->setAttribute('action', $this->url()->fromRoute('access/lost-password'));
 

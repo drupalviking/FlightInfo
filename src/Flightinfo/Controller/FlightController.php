@@ -14,9 +14,20 @@ use FlightInfo\Form\Flight as FlightForm;
 
 class FlightController extends AbstractActionController{
   public function indexAction(){
+    phpinfo();
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
+
+    //////////////////////////////////////////
+    //// XML STREAM FUNCTIONS
+    //// @todo: Move to console controller
+    /////////////////////////////////////////
+    $XMLService = $sm->get('FlightInfo\Service\XMLStream');
+    $XMLStreamObject = $XMLService->bootstrap($airportService->fetchAll());
+    print_r( $XMLStreamObject); die();
+    $flightService->processStream( $XMLStreamObject );
+    /////////////////////////////////////////
 
     //FLIGHT FOUND
     //

@@ -5,7 +5,7 @@
  * Date: 11/05/15
  * Time: 09:38
  */
-namespace Stjornvisi\Controller;
+namespace FlightInfo\Controller;
 
 use Zend\Console\Request as ConsoleRequest;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -15,7 +15,7 @@ use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver;
 
 class ConsoleController extends AbstractActionController{
-  public function processStream(){
+  public function processStreamAction(){
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');

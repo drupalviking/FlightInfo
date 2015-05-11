@@ -35,6 +35,33 @@ use FlightInfo\Auth\Adapter;
 class Module
 {
 	/**
+	 * Run for every request to the system.
+	 *
+	 * This function does a lot. It register all kinds of event.
+	 * Logs critical error. Select correct layouts, just to
+	 * name a few points....
+	 *
+	 * @param MvcEvent $e
+	 */
+	public function onBootstrap(MvcEvent $e)
+	{
+
+		//CONFIG
+		//	get config values from the application
+		//	config files.
+		$config = $e->getApplication()
+			->getServiceManager()
+			->get('Configuration');
+		//SESSION
+		//	config and start session
+		/*
+		$sessionConfig = new SessionConfig();
+		$sessionConfig->setOptions($config['session']);
+		$sessionManager = new SessionManager($sessionConfig);
+		$sessionManager->start();
+		*/
+	}
+	/**
 	 * Load the application config.
 	 *
 	 * @return mixed
