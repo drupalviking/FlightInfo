@@ -156,9 +156,11 @@ class User implements DataSourceAwareInterface {
    */
   public function create( $data ){
     try{
-      $data['passwd'] = md5($data['passwd']);
-      $data['created_date'] = date('Y-m-d H:i:s');
-      $data['modified_date'] = date('Y-m-d H:i:s');
+      $data['passwd'] = md5($data['password']);
+      $data['created_date'] = time();
+      $data['modified_date'] = time();
+
+      unset($data['password']);
 
       $createString = $this->insertString('User',$data);
       $createStatement = $this->pdo->prepare($createString);
@@ -175,7 +177,11 @@ class User implements DataSourceAwareInterface {
 
   public function update( $id, $data ){
     try{
-      $data['modified_date'] = date('Y-m-d H:i:s');
+      $data['modified_date'] = time();
+      unset($data['submit']);
+
+      $data['passwd'] = md5($data['password']);
+      unset($data['password']);
 
       $updateString = $this->updateString('User',$data,"id={$id}");
       $updateStatement = $this->pdo->prepare($updateString);

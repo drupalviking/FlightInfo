@@ -55,18 +55,6 @@ class User extends Form{
     ));
 
     $this->add(array(
-      'name' => 'password-again',
-      'type' => 'Zend\Form\Element\Password',
-      'attributes' => array(
-        'placeholder' => 'Lykilorð aftur...',
-        'required' => 'required',
-      ),
-      'options' => array(
-        'label' => 'Lykilorð aftur',
-      ),
-    ));
-
-    $this->add(array(
       'name' => 'submit',
       'type' => 'Zend\Form\Element\Submit',
       'attributes' => array(

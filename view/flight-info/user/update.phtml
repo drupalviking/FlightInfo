@@ -9,6 +9,7 @@ $this->form->setAttribute('class','form-horizontal');
 ?>
 <div class="layout layout--three-columns">
   <section class="layout__section">
+    <h1>Uppfæra notanda</h1>
     <div class="layout__data">
       <?=$this->form()->openTag($this->form);?>
 
@@ -23,7 +24,16 @@ $this->form->setAttribute('class','form-horizontal');
         <?=$this->formElement($form->get('email')->setAttribute('class','form-control'));?>
         <?=$this->formElementErrors($form->get('email'));?>
       </div>
-
+      <div class="form-group">
+        <?=$this->formLabel($form->get('password'));?>
+        <?=$this->formElement($form->get('password')->setAttribute('class','form-control'));?>
+        <?=$this->formElementErrors($form->get('password'));?>
+      </div>
+      <div class="form-group">
+        <?=$this->formElement(
+          $form->get('submit')->setAttribute('class','btn btn-default')->setValue('Skrá')
+        );?>
+      </div>
       <?= $this->form()->closeTag() ?>
     </div>
     <div class="layout__meta">&nbsp;</div>
