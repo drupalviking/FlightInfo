@@ -55,9 +55,10 @@ class AirportController extends AbstractActionController
   public function createAction(){
     $sm = $this->getServiceLocator();
     $airportService = $sm->get('FlightInfo\Service\Airport');
-    $auth = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
-    if( $auth->hasIdentity() && $auth->getIdentity()->id == 1) {
+    if($authService->isAdmin()) {
       $form = new AirportForm();
       //POST
       //  http post request
@@ -95,9 +96,10 @@ class AirportController extends AbstractActionController
   public function updateAction(){
     $sm = $this->getServiceLocator();
     $airportService = $sm->get('FlightInfo\Service\Airport');
-    $auth = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
-    if( $auth->hasIdentity() && $auth->getIdentity()->id == 1) {
+    if($authService->isAdmin()) {
       $form = new AirportForm();
       if (($airport = $airportService->get($this->params()->fromRoute('id')) ) != false) {
         //POST

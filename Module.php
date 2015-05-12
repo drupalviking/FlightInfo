@@ -90,11 +90,13 @@ class Module
 			'invokables' => [
 				'FlightInfo\Service\User'					=> 'FlightInfo\Service\User',
 				'FlightInfo\Auth\Adapter'					=> 'FlightInfo\Auth\Adapter',
+                'FlightInfo\Auth\SwitchAdapter'					=> 'FlightInfo\Auth\SwitchAdapter',
 				'FlightInfo\Service\Airport' 			=> 'FlightInfo\Service\Airport',
 				'FlightInfo\Service\Airline' 			=> 'FlightInfo\Service\Airline',
 				'FlightInfo\Service\Flight' 			=> 'FlightInfo\Service\Flight',
 				'FlightInfo\Service\Flightnumber' => 'FlightInfo\Service\Flightnumber',
 				'FlightInfo\Service\XMLStream' 		=> 'FlightInfo\Service\XMLStream',
+                'Zend\Authentication\AuthenticationService' => 'FlightInfo\Auth\AuthenticationService'
 			],
 			'aliases' => array(
 				'UserService' => 'FlightInfo\Service\User',
