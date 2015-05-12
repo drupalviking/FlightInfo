@@ -7,9 +7,6 @@
  */
 namespace FlightInfo\Controller;
 
-date_default_timezone_set('UTC');
-setlocale(LC_ALL, 'is_IS');
-
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Stdlib\ArrayObject;
 use Zend\View\Model\ViewModel;

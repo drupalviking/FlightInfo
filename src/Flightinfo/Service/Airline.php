@@ -7,9 +7,6 @@
  */
 namespace FlightInfo\Service;
 
-date_default_timezone_set('UTC');
-setlocale(LC_ALL, 'is_IS');
-
 use PDOException;
 use FlightInfo\Lib\DataSourceAwareInterface;
 use FlightInfo\Service\DatabaseService;
