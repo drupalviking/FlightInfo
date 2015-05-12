@@ -1,0 +1,42 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: drupalviking
+ * Date: 06/05/15
+ * Time: 08:47
+ */
+$this->form->setAttribute('class','form-horizontal');
+?>
+<div class="layout layout--three-columns">
+  <section class="layout__section">
+    <h1>Stofna notanda</h1>
+    <div class="layout__data">
+      <?=$this->form()->openTag($this->form);?>
+
+      <div class="form-group">
+        <?=$this->formLabel($form->get('name'));?>
+        <?=$this->formElement($form->get('name')->setAttribute('class','form-control'));?>
+        <?=$this->formElementErrors($form->get('name'));?>
+      </div>
+
+      <div class="form-group">
+        <?=$this->formLabel($form->get('email'));?>
+        <?=$this->formElement($form->get('email')->setAttribute('class','form-control'));?>
+        <?=$this->formElementErrors($form->get('email'));?>
+      </div>
+      <div class="form-group">
+        <?=$this->formLabel($form->get('password'));?>
+        <?=$this->formElement($form->get('password')->setAttribute('class','form-control'));?>
+        <?=$this->formElementErrors($form->get('password'));?>
+      </div>
+      <div class="form-group">
+        <?=$this->formElement(
+          $form->get('submit')->setAttribute('class','btn btn-default')->setValue('Skrá')
+        );?>
+      </div>
+      <?= $this->form()->closeTag() ?>
+    </div>
+    <div class="layout__meta">&nbsp;</div>
+  </section>
+  <aside class="layout__aside">&nbsp;</aside>
+</div>
