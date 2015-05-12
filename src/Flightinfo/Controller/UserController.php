@@ -31,14 +31,23 @@ class UserController extends AbstractActionController{
   public function indexAction(){
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
+    $auth = new AuthenticationService();
 
-    if (($user = $userService->get($this->params()->fromRoute('id', 0)) ) != false) {
-      return new ViewModel(
-        [
-          'user'=> $user,
-        ]
-      );
-    } else {
+    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+      if (($user = $userService->get($this->params()
+          ->fromRoute('id', 0))) != FALSE
+      ) {
+        return new ViewModel(
+          [
+            'user' => $user,
+          ]
+        );
+      }
+      else {
+        return $this->notFoundAction();
+      }
+    }
+    else{
       return $this->notFoundAction();
     }
   }
@@ -47,13 +56,21 @@ class UserController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
 
-    if (($users = $userService->fetchAll()) != false) {
-      return new ViewModel(
-        [
-          'users'=> $users,
-        ]
-      );
-    } else {
+    $auth = new AuthenticationService();
+
+    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+      if (($users = $userService->fetchAll()) != FALSE) {
+        return new ViewModel(
+          [
+            'users' => $users,
+          ]
+        );
+      }
+      else {
+        return $this->notFoundAction();
+      }
+    }
+    else{
       return $this->notFoundAction();
     }
   }
@@ -61,60 +78,76 @@ class UserController extends AbstractActionController{
   public function createAction(){
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
+    $airlineService = $sm->get('FlightInfo\Service\Airline');
+    $auth = new AuthenticationService();
 
-    $form = new UserForm();
+    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+      $form = new UserForm($airlineService);
 
-    if ($this->request->isPost()) {
-      $form->setData($this->request->getPost());
-      //VALID
-      //  form is valid
-      if ($form->isValid()) {
-        $data = $form->getData();
-        unset($data['submit']);
-        $airportId = $userService->create($data);
-        return $this->redirect()->toRoute('user/index', ['id'=>$airportId]);
-        //INVALID
-        //  form data is invalid
-      } else {
-        $this->getResponse()->setStatusCode(400);
+      if ($this->request->isPost()) {
+        $form->setData($this->request->getPost());
+        //VALID
+        //  form is valid
+        if ($form->isValid()) {
+          $data = $form->getData();
+          unset($data['submit']);
+          $airportId = $userService->create($data);
+          return $this->redirect()->toRoute('user/index', ['id' => $airportId]);
+          //INVALID
+          //  form data is invalid
+        }
+        else {
+          $this->getResponse()->setStatusCode(400);
+          return new ViewModel(['form' => $form]);
+        }
+        //QUERY
+        //  http get request
+      }
+      else {
         return new ViewModel(['form' => $form]);
       }
-      //QUERY
-      //  http get request
-    } else {
-      return new ViewModel(['form' => $form]);
+    }
+    else{
+      return $this->notFoundAction();
     }
   }
 
   public function updateAction(){
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
+    $airlineService = $sm->get('FlightInfo\Service\Airline');
+    $auth = new AuthenticationService();
 
-    if (($user = $userService->get($this->params()->fromRoute('id')) ) != false) {
-      $form = new UserForm();
-      $form->setAttribute('action', $this->url()->fromRoute('user/update', ['id'=>$user->id]));
+    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+      if (($user = $userService->get($this->params()->fromRoute('id')) ) != false) {
+        $form = new UserForm($airlineService);
+        $form->setAttribute('action', $this->url()->fromRoute('user/update', ['id'=>$user->id]));
 
-      if ($this->request->isPost()) {
-        $form->setData($this->request->getPost());
-        //VALID FORM
-        //
-        if ($form->isValid()) {
-          $data = $form->getData();
-
-          $userService->update($user->id, $data);
-          return $this->redirect()->toRoute('user/index', ['id'=>$user->id]);
-          //INVALID
+        if ($this->request->isPost()) {
+          $form->setData($this->request->getPost());
+          //VALID FORM
           //
+          if ($form->isValid()) {
+            $data = $form->getData();
+
+            $userService->update($user->id, $data);
+            return $this->redirect()->toRoute('user/index', ['id'=>$user->id]);
+            //INVALID
+            //
+          } else {
+            $this->getResponse()->setStatusCode(400);
+            return new ViewModel(['form' => $form, 'user' => $user]);
+          }
+          //QUERY
+          //  get request
         } else {
-          $this->getResponse()->setStatusCode(400);
+          $form->bind(new ArrayObject($user));
           return new ViewModel(['form' => $form, 'user' => $user]);
         }
-        //QUERY
-        //  get request
-      } else {
-        $form->bind(new ArrayObject($user));
-        return new ViewModel(['form' => $form, 'user' => $user]);
       }
+    }
+    else{
+      return $this->notFoundAction();
     }
   }
 }

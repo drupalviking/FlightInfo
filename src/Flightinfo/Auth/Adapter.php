@@ -66,13 +66,6 @@ class Adapter implements AdapterInterface, DataSourceAwareInterface
       return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, null);
     } else if (count($result) == 1) {
       $data = $result[0];
-      $updateStatement = $this->pdo
-        ->prepare("
-					UPDATE `User` SET frequency = frequency+1, modified_date = NOW()
-					WHERE id = :id");
-      $updateStatement->execute(array(
-        'id' => $data->id
-      ));
       unset($data->passwd);
       return new Result(Result::SUCCESS, $result[0]);
     } else {

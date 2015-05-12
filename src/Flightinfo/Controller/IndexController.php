@@ -10,6 +10,7 @@
 namespace FlightInfo\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Authentication\AuthenticationService;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\FeedModel;
 
@@ -33,6 +34,7 @@ class IndexController extends AbstractActionController
         //SERVICES
         //  load all services
         $sm = $this->getServiceLocator();
+
         //$newsService = $sm->get('FlightInfo\Service\News');
 
         return new ViewModel();

@@ -119,9 +119,6 @@ class AuthController extends AbstractActionController
       //NOT LOGGED IN
       //  user is not logged in
     } else {
-      $lostForm = new LostPasswordForm();
-      $lostForm->setAttribute('action', $this->url()->fromRoute('access/lost-password'));
-
       //POST
       //  http post request, trying to log in
       if ($this->request->isPost()) {
@@ -154,7 +151,7 @@ class AuthController extends AbstractActionController
           } else {
             $form->get('email')->setMessages(["Rangt lykilorð"]);
 
-            return new ViewModel(['form' => $form, 'lost' => $lostForm]);
+            return new ViewModel(['form' => $form]);
           }
           //INVALID
           //  invalid login form
@@ -162,7 +159,6 @@ class AuthController extends AbstractActionController
           return new ViewModel(
             [
               'form' => $form,
-              'lost' => $lostForm,
             ]
           );
         }
@@ -171,7 +167,7 @@ class AuthController extends AbstractActionController
         //QUERY
         //  http get request, user gets login form
       } else {
-        return new ViewModel(['form' => new Login(), 'lost' => $lostForm,]);
+        return new ViewModel(['form' => new Login()]);
       }
     }
   }

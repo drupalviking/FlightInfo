@@ -9,25 +9,16 @@ namespace FlightInfo\Controller;
 
 use ArrayObject;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Authentication\AuthenticationService;
 use Zend\View\Model\ViewModel;
 use FlightInfo\Form\Flight as FlightForm;
 
 class FlightController extends AbstractActionController{
   public function indexAction(){
-    phpinfo();
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
-
-    //////////////////////////////////////////
-    //// XML STREAM FUNCTIONS
-    //// @todo: Move to console controller
-    /////////////////////////////////////////
-    $XMLService = $sm->get('FlightInfo\Service\XMLStream');
-    $XMLStreamObject = $XMLService->bootstrap($airportService->fetchAll());
-    print_r( $XMLStreamObject); die();
-    $flightService->processStream( $XMLStreamObject );
-    /////////////////////////////////////////
+    $auth = new AuthenticationService();
 
     //FLIGHT FOUND
     //
@@ -40,6 +31,7 @@ class FlightController extends AbstractActionController{
         'flight' => $flight,
         'airport_from' => $airport_from,
         'airport_to' => $airport_to,
+        'auth'  => ($auth->hasIdentity()) ? $auth : null
       ]);
     }
   }
@@ -47,12 +39,27 @@ class FlightController extends AbstractActionController{
   public function listAction(){
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
+    $airportService = $sm->get('FlightInfo\Service\Airport');
+    $auth = new AuthenticationService();
+
+    //////////////////////////////////////////
+    //// XML STREAM FUNCTIONS
+    //// @todo: Move to console controller
+    /////////////////////////////////////////
+    $XMLService = $sm->get('FlightInfo\Service\XMLStream');
+    $XMLStreamObject = $XMLService->bootstrap($airportService->fetchAll());
+    $flightService->processStream( $XMLStreamObject );
+    /////////////////////////////////////////
+
     $date = strtotime(strftime('%d.%m.%Y', time()));
     $flights = $flightService->fetchAll($date);
 
     if($flights != false){
       $flights = $this->_covertArrayOfFlightsEpochTimeToHumanReadable($flights);
-      return new ViewModel(['flights' => $flights]);
+      return new ViewModel([
+        'flights' => $flights,
+        'auth'  => ($auth->hasIdentity()) ? $auth : null
+      ]);
     }
   }
 
@@ -60,28 +67,46 @@ class FlightController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
+    $airlineService = $sm->get('FlightInfo\Service\Airline');
     $flightnumberService = $sm->get('FlightInfo\Service\Flightnumber');
+    $auth = new AuthenticationService();
 
-    $form = new FlightForm($airportService);
-    $form->setAttribute('action', $this->url()->fromRoute('flight/create'));
+    if($auth->hasIdentity() ) {
+      $form = new FlightForm($airportService);
+      $form->setAttribute('action', $this->url()->fromRoute('flight/create'));
 
-    if ($this->request->isPost()) {
-      $form->setData($this->request->getPost());
-      if ($form->isValid()) {
-        $data = $form->getData();
-        $data['airline'] = $flightnumberService->getAirlineFromFlightNumber($data['flightnumber'])->id;
-        unset($data['submit']);
-        $id = $flightService->create($data);
+      if ($this->request->isPost()) {
+        $form->setData($this->request->getPost());
+        if ($form->isValid()) {
+          $data = $form->getData();
+          if($auth->getIdentity()->is_admin){
+            $data['airline'] = $flightnumberService->getAirlineFromFlightNumber($data['flightnumber'])->id;
+          }
+          else{
+            $data['airline'] = $auth->getIdentity()->airline;
+          }
+          unset($data['submit']);
+          $id = $flightService->create($data);
 
-        return $this->redirect()->toRoute('flight/index', ['id'=>$id]);
-      } else {
-        $this->getResponse()->setStatusCode(400);
-        return new ViewModel(['form' => $form]);
+          return $this->redirect()->toRoute('flight/index', ['id' => $id]);
+        }
+        else {
+          $this->getResponse()->setStatusCode(400);
+          return new ViewModel([
+            'form' => $form,
+            'airline' => $airlineService->get($auth->getIdentity()->airline)]);
+        }
+        //QUERY
+        //  http get request
       }
-      //QUERY
-      //  http get request
-    } else {
-      return new ViewModel(['form' => $form]);
+      else {
+        return new ViewModel([
+          'form' => $form,
+          'airline' => $airlineService->get($auth->getIdentity()->airline)]);
+      }
+    }
+    else{
+      return $this->notFoundAction();
     }
   }
 
@@ -90,43 +115,50 @@ class FlightController extends AbstractActionController{
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
     $flightnumberService = $sm->get('FlightInfo\Service\Flightnumber');
+    $authService = new AuthenticationService();
 
     //FLIGHT FOUND
     //
-    if (($flight = $flightService->get($this->params()->fromRoute('id', 0))) != false) {
-      //Change times from EPOCH to Human readable
-      $flight = $this->_convertEpochToHumanReadable($flight);
+    if($authService->hasIdentity()) {
+      if (($flight = $flightService->get($this->params()->fromRoute('id', 0))) != FALSE) {
+        //Change times from EPOCH to Human readable
+        $flight = $this->_convertEpochToHumanReadable($flight);
 
-      $form = new FlightForm($airportService);
+        $form = new FlightForm($airportService);
 
-      if ($this->request->isPost()) {
-        $form->setData($this->request->getPost());
-        if ($form->isValid()) {
-          $data = $form->getData();
-          $data['airline'] = $flightnumberService->getAirlineFromFlightNumber($data['flightnumber'])->id;
-          unset($data['submit']);
-          $id = $flightService->update($this->params()->fromRoute('id', 0), $data);
+        if ($this->request->isPost()) {
+          $form->setData($this->request->getPost());
+          if ($form->isValid()) {
+            $data = $form->getData();
+            $data['airline'] = $flightnumberService->getAirlineFromFlightNumber($data['flightnumber'])->id;
+            unset($data['submit']);
+            $id = $flightService->update($this->params()
+              ->fromRoute('id', 0), $data);
 
-          return $this->redirect()->toRoute('flight/index', ['id' => $id]);
+            return $this->redirect()->toRoute('flight/index', ['id' => $id]);
+          }
+          else {
+            $this->getResponse()->setStatusCode(400);
+            return new ViewModel([
+              'form' => $form,
+              'flight' => $flight,
+            ]);
+          }
+          //QUERY
+          //  http get request
         }
         else {
-          $this->getResponse()->setStatusCode(400);
-          return new ViewModel([
-            'form' => $form,
-            'flight' => $flight,
-          ]);
+          $form->bind(new ArrayObject($flight));
+          return new ViewModel(
+            [
+              'flight' => $flight,
+              'form' => $form
+            ]
+          );
         }
-        //QUERY
-        //  http get request
       }
       else {
-        $form->bind(new ArrayObject($flight));
-        return new ViewModel(
-          [
-            'flight' => $flight,
-            'form' => $form
-          ]
-        );
+        return $this->notFoundAction();
       }
     }
     else{

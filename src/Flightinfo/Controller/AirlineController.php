@@ -59,78 +59,90 @@ class AirlineController extends AbstractActionController
   public function createAction(){
     $sm = $this->getServiceLocator();
     $airlineService = $sm->get('FlightInfo\Service\Airline');
+    $authService = new AuthenticationService();
 
-    $form = new AirlineForm();
-    //POST
-    //  http post request
-    if ($this->request->isPost()) {
-      $form->setData($this->request->getPost());
-      //VALID
-      //  form is valid
-      if ($form->isValid()) {
-        $data = $form->getData();
-        unset($data['submit']);
-        $airlineId = $airlineService->create($data);
-        return $this->redirect()->toRoute('airline/index', ['id'=>$airlineId]);
-        //INVALID
-        //  form data is invalid
+    if( $authService->hasIdentity() && $authService->getIdentity()->id == 1){
+      $form = new AirlineForm();
+      //POST
+      //  http post request
+      if ($this->request->isPost()) {
+        $form->setData($this->request->getPost());
+        //VALID
+        //  form is valid
+        if ($form->isValid()) {
+          $data = $form->getData();
+          unset($data['submit']);
+          $airlineId = $airlineService->create($data);
+          return $this->redirect()->toRoute('airline/index', ['id'=>$airlineId]);
+          //INVALID
+          //  form data is invalid
+        } else {
+          $this->getResponse()->setStatusCode(400);
+          return new ViewModel(['form' => $form]);
+        }
+        //QUERY
+        //  http get request
       } else {
-        $this->getResponse()->setStatusCode(400);
         return new ViewModel(['form' => $form]);
       }
-      //QUERY
-      //  http get request
-    } else {
-      return new ViewModel(['form' => $form]);
+    }
+    else{
+      return $this->notFoundAction();
     }
   }
 
   public function updateAction(){
     $sm = $this->getServiceLocator();
     $airlineService = $sm->get('FlightInfo\Service\Airline');
+    $authService = new AuthenticationService();
 
-    $form = new AirlineForm();
-    if (($airline = $airlineService->get($this->params()->fromRoute('id')) ) != false) {
-      //POST
-      //  post request
-      if ($this->request->isPost()) {
-        $form->setData($this->request->getPost());
+    if( $authService->hasIdentity() && $authService->getIdentity()->id == 1){
+      $form = new AirlineForm();
+      if (($airline = $airlineService->get($this->params()->fromRoute('id')) ) != false) {
+        //POST
+        //  post request
+        if ($this->request->isPost()) {
+          $form->setData($this->request->getPost());
 
-        //VALID FORM
-        //  form data is valid
-        if ($form->isValid()) {
-          $data = $form->getData();
-          unset($data['submit']);
-          $airlineService->update($airline->id, $data);
-          return $this->redirect()
-            ->toRoute('airline/index', ['id' => $airline->id]);
-          //INVALID
-          //  form data is invalid
+          //VALID FORM
+          //  form data is valid
+          if ($form->isValid()) {
+            $data = $form->getData();
+            unset($data['submit']);
+            $airlineService->update($airline->id, $data);
+            return $this->redirect()
+              ->toRoute('airline/index', ['id' => $airline->id]);
+            //INVALID
+            //  form data is invalid
+          }
+          else {
+            $this->getResponse()->setStatusCode(400);
+            return new ViewModel(
+              [
+                'airline' => $airline,
+                'form' => $form,
+              ]
+            );
+          }
+          //QUERY
+          //  get request
         }
         else {
-          $this->getResponse()->setStatusCode(400);
-          return new ViewModel(
+          $form->bind(new ArrayObject((array) $airline));
+          $view = new ViewModel(
             [
               'airline' => $airline,
               'form' => $form,
             ]
           );
-        }
-        //QUERY
-        //  get request
-      }
-      else {
-        $form->bind(new ArrayObject((array) $airline));
-        $view = new ViewModel(
-          [
-            'airline' => $airline,
-            'form' => $form,
-          ]
-        );
 
-        $view->setTerminal($this->request->isXmlHttpRequest());
-        return $view;
+          $view->setTerminal($this->request->isXmlHttpRequest());
+          return $view;
+        }
       }
+    }
+    else{
+      return $this->notFoundAction();
     }
   }
 }

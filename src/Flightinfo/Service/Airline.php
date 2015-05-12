@@ -53,6 +53,29 @@ class Airline implements DataSourceAwareInterface {
     }
   }
 
+  public function getAirlineNames(){
+    try{
+      $return_array = null;
+      $statement = $this->pdo->prepare("
+        SELECT id, name_icelandic FROM Airline
+        ORDER BY name_icelandic
+      ");
+      $statement->execute();
+      $airlines = $statement->fetchAll();
+
+      if (!$airlines) {
+        return FALSE;
+      }
+      foreach( $airlines as $airline ){
+        $return_array[$airline->id] = $airline->name_icelandic;
+      }
+
+      return $return_array;
+    } catch (PDOException $e) {
+      throw new Exception("Can't get airline item.", 0, $e);
+    }
+  }
+
   /**
    * Get all flight entries.
    *

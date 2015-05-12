@@ -9,11 +9,12 @@
 <div class="layout layout--three-columns">
 	<section class="layout__section">
 		<div class="layout__data">
-
       <h1 class="layout__headline"><?=$this->user->name;?></h1>
       <dl class="block-property-value block-property-value--em">
         <dt>Netfang</dt>
         <dd><a href="mailto:<?=$this->user->email?>"><?=$this->user->email?></a></dd>
+        <dt>Flugfélag</dt>
+        <dd><?=$this->user->name_icelandic; ?></dd>
         <dt>Síðan</dt>
         <dd><?=strftime("%d. %B %Y", $this->user->created_date)?></dd>
         <dt>Kerfisstjóri</dt>

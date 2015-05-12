@@ -35,12 +35,20 @@ class User implements DataSourceAwareInterface {
     try {
       if (filter_var($id, FILTER_VALIDATE_EMAIL)) {
         $statement = $this->pdo->prepare("
-					SELECT U.*, MD5( CONCAT(U.id,U.email) ) AS hash FROM `User` U WHERE email = :id
+					SELECT U.*, A.name_icelandic, MD5( CONCAT(U.id,U.email) ) AS hash
+					FROM `User` U
+					INNER JOIN Airline A
+					ON A.id = U.airline
+					WHERE email = :id
 				");
       }
       else {
         $statement = $this->pdo->prepare("
-					SELECT U.*, MD5( CONCAT(U.id,U.email) ) AS hash FROM `User` U WHERE id = :id
+					SELECT U.*, A.name_icelandic, MD5( CONCAT(U.id,U.email) ) AS hash
+					FROM `User` U
+					INNER JOIN Airline A
+					ON A.id = U.airline
+					WHERE U.id = :id
 				");
       }
 

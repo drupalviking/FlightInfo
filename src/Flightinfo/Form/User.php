@@ -12,7 +12,8 @@ use Zend\Form\Element;
 use Zend\Form\Form;
 
 class User extends Form{
-  public function __construct(){
+  public function __construct($airlines){
+    $this->airlines = $airlines;
 
     parent::__construct( strtolower( str_replace('\\','-',get_class($this) ) ));
 
@@ -41,6 +42,19 @@ class User extends Form{
         'label' => 'Netfang',
       ),
     ));
+
+    $this->add([
+      'name' => 'airline',
+      'type' => 'Zend\Form\Element\Select',
+      'attributes' => [
+        'required' => 'required',
+        'tabindex' => 3
+      ],
+      'options' => [
+        'label' => 'Flugfélag',
+        'value_options' => $this->airlines->getAirlineNames(),
+      ],
+    ]);
 
     $this->add(array(
       'name' => 'password',

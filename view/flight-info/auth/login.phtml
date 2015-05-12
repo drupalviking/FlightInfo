@@ -13,26 +13,6 @@
 
   <div class="layout layout--three-columns page-login">
     <section class="layout__section">
-      <div class="layout__data page-login__service">
-        <h2 class="layout__headline">Gleymt lykilorð</h2>
-        <p>Ef þú hefur gleymt lykilorðinu þínu, sláðu þá inn netfang og
-          fáðu nýtt sent í pósti</p>
-        <?=$this->form()->openTag($this->lost);?>
-        <div class="form-group">
-          <?=$this->formLabel($this->lost->get('email'));?>
-          <?=$this->formElement($this->lost->get('email')->setAttribute('class','form-control'));?>
-          <?=$this->formElementErrors($this->lost->get('email'));?>
-        </div>
-        <div class="form-group">
-          <?=$this->formElement(
-            $this->lost->get('submit')->setAttribute('class','btn btn-default')->setValue('Senda')
-          );?>
-        </div>
-        <?= $this->form()->closeTag() ?>
-
-
-
-      </div>
       <div class="layout__meta page-login__manual">
         <p>Að sjálfsögðu er hægt að skrá sig inn með gamla mátanum</p>
         <?=$this->form()->openTag($this->form);?>
