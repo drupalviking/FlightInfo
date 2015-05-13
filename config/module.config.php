@@ -44,6 +44,22 @@ return array(
             'action' => 'login'
           ),
         ),
+          'may_terminate' => true,
+          'child_routes' => array(
+              'index' => array(
+                  'type' => 'Zend\Mvc\Router\Http\Segment',
+                  'options' => array(
+                      'route' => '/switch/:id',
+                      'constraints' => array(
+                          'id' => '[0-9]*',
+                      ),
+                      'defaults' => array(
+                          'controller' => 'FlightInfo\Controller\Auth',
+                          'action' => 'switch'
+                      ),
+                  )
+              ),
+          ),
       ),
       'airport' => array(
         'type' => 'Zend\Mvc\Router\Http\Literal',

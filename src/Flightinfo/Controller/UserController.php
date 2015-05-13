@@ -31,9 +31,10 @@ class UserController extends AbstractActionController{
   public function indexAction(){
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
-    $auth = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
-    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+    if($authService->isAdmin()) {
       if (($user = $userService->get($this->params()
           ->fromRoute('id', 0))) != FALSE
       ) {
@@ -56,9 +57,10 @@ class UserController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
 
-    $auth = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
-    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+    if($authService->isAdmin()) {
       if (($users = $userService->fetchAll()) != FALSE) {
         return new ViewModel(
           [
@@ -79,9 +81,10 @@ class UserController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
     $airlineService = $sm->get('FlightInfo\Service\Airline');
-    $auth = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
-    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+    if($authService->isAdmin()) {
       $form = new UserForm($airlineService);
 
       if ($this->request->isPost()) {
@@ -116,9 +119,10 @@ class UserController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $userService = $sm->get('FlightInfo\Service\User');
     $airlineService = $sm->get('FlightInfo\Service\Airline');
-    $auth = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
-    if($auth->hasIdentity() && $auth->getIdentity()->is_admin == 1) {
+    if($authService->isAdmin()) {
       if (($user = $userService->get($this->params()->fromRoute('id')) ) != false) {
         $form = new UserForm($airlineService);
         $form->setAttribute('action', $this->url()->fromRoute('user/update', ['id'=>$user->id]));

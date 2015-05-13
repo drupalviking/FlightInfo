@@ -68,6 +68,23 @@ class AuthController extends AbstractActionController
     }
   }
 
+    public function switchAction()
+    {
+        $sm = $this->getServiceLocator();
+        $auth = $sm->get('Zend\Authentication\AuthenticationService');
+
+        $sm->get('FlightInfo\Auth\SwitchAdapter');
+
+        $authAdapter =  $sm->get('FlightInfo\Auth\Adapter');
+        $authAdapter->setIdentifier($this->params('id'));
+        $result = $auth->authenticate($authAdapter);
+        if ($result->isValid()) {
+            return $this->redirect()->toRoute('home');
+        } else {
+            throw new \Exception("User [{$this->params('id')}] not found");
+        }
+    }
+
   /**
    * Last installment of creating user in the system.
    *
@@ -110,7 +127,8 @@ class AuthController extends AbstractActionController
    */
   public function loginAction()
   {
-    $auth = new AuthenticationService();
+      $sm = $this->getServiceLocator();
+      $auth = $sm->get('Zend\Authentication\AuthenticationService');
 
     //IS LOGGED IN
     //  user is logged in

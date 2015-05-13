@@ -18,7 +18,8 @@ class FlightController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
-    $auth = new AuthenticationService();
+      $auth = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
     //FLIGHT FOUND
     //
@@ -40,7 +41,8 @@ class FlightController extends AbstractActionController{
     $sm = $this->getServiceLocator();
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
-    $auth = new AuthenticationService();
+      $auth = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
     //////////////////////////////////////////
     //// XML STREAM FUNCTIONS
@@ -69,7 +71,8 @@ class FlightController extends AbstractActionController{
     $airportService = $sm->get('FlightInfo\Service\Airport');
     $airlineService = $sm->get('FlightInfo\Service\Airline');
     $flightnumberService = $sm->get('FlightInfo\Service\Flightnumber');
-    $auth = new AuthenticationService();
+      $auth = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
     if($auth->hasIdentity() ) {
       $form = new FlightForm($airportService);
@@ -115,7 +118,8 @@ class FlightController extends AbstractActionController{
     $flightService = $sm->get('FlightInfo\Service\Flight');
     $airportService = $sm->get('FlightInfo\Service\Airport');
     $flightnumberService = $sm->get('FlightInfo\Service\Flightnumber');
-    $authService = new AuthenticationService();
+      $authService = $sm->get('Zend\Authentication\AuthenticationService');
+      /** @var $authService \FlightInfo\Auth\AuthenticationService */
 
     //FLIGHT FOUND
     //
