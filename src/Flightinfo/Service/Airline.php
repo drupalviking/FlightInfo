@@ -15,7 +15,7 @@ class Airline implements DataSourceAwareInterface {
 
   use DatabaseService;
 
-  const NAME = 'flight';
+  const NAME = 'airline';
 
   /**
    * @var \PDO

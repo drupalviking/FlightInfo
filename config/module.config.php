@@ -247,7 +247,82 @@ return array(
           ),
         ),
       ),
-      'user' => array(
+      'json' => array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+          'route' => '/json',
+          'defaults' => array(
+            'controller' => 'FlightInfo\Controller\Json',
+            'action' => 'index'
+          ),
+        ),
+        'may_terminate' => true,
+        'child_routes' => array(
+          'flights-all' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              //'route' => '/flights',
+              'route' => '/flights/:dt/:type',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Json',
+                'action' => 'flights'
+              ),
+            )
+          ),
+          'flights-with-airports-and-carrier' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              //'route' => '/flights',
+              'route' => '/flights/:dt/:type/airports/:airports/carriers/:carriers',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Json',
+                'action' => 'flights'
+              ),
+            )
+          ),
+          'flights-with-airports' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/flights/:dt/:type/airports/:airports',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Json',
+                'action' => 'flights'
+              ),
+            )
+          ),
+          'flights-with-carrier' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/flights/:dt/:type/carriers/:carriers',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Json',
+                'action' => 'flights'
+              ),
+            )
+          ),
+          'airports' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/airports',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Json',
+                'action' => 'airports'
+              ),
+            )
+          ),
+          'airlines' => array(
+            'type' => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+              'route' => '/airlines',
+              'defaults' => array(
+                'controller' => 'FlightInfo\Controller\Json',
+                'action' => 'airlines'
+              ),
+            )
+          ),
+        ),
+      ),
+      'notandi' => array(
         'type' => 'Zend\Mvc\Router\Http\Literal',
         'options' => array(
           'route' => '/notandi',
@@ -337,6 +412,7 @@ return array(
       'FlightInfo\Controller\Airport' => 'FlightInfo\Controller\AirportController',
       'FlightInfo\Controller\Airline' => 'FlightInfo\Controller\AirlineController',
       'FlightInfo\Controller\Flight' => 'FlightInfo\Controller\FlightController',
+      'FlightInfo\Controller\Json' => 'FlightInfo\Controller\JsonController',
       'FlightInfo\Controller\Console' => 'FlightInfo\Controller\ConsoleController',
       'FlightInfo\Controller\User' => 'FlightInfo\Controller\UserController',
     ),
